@@ -174,8 +174,8 @@
 
 
         onCustomWidgetAfterUpdate(changedProperties) {
-            console.log("After update:", changedProperties);
             this._data = changedProperties.selections || this._data;
+            console.log("Updated selections:", this._data);
             this._render();
         }
     }
