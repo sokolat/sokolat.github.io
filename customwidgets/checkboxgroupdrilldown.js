@@ -96,12 +96,12 @@
 
             // Build hierarchy from _data array
             const hierarchy = {};
-            this._data.forEach(item => {
+            this.selections.forEach(item => {
                 if (!item.parentId) {
                     hierarchy[item.id] = { ...item, children: [] };
                 }
             });
-            this._data.forEach(item => {
+            this.selections.forEach(item => {
                 if (item.parentId && hierarchy[item.parentId]) {
                     hierarchy[item.parentId].children.push(item);
                 }
@@ -174,9 +174,9 @@
 
 
         onCustomWidgetAfterUpdate(changedProperties) {
-            this._data = changedProperties.selections || this._data;
-            console.log("Updated selections:", this._data);
-            this._render();
+
+            console.log("Updated selections:", this.selections);
+            //this._render();
         }
     }
 
