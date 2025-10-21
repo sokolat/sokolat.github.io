@@ -10,6 +10,7 @@
                 min-width: 220px;
                 min-height: 120px;
                 box-sizing: border-box;
+                background-color: #fafafa;
             }
 
             .parent {
