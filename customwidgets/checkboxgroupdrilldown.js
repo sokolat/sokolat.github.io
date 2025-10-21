@@ -6,26 +6,26 @@
                 display: block;
                 border: 2px solid #0070f2;
                 border-radius: 6px;
-                padding: 10px;
+                padding: 12px;
                 font-family: Arial, sans-serif;
                 font-size: 14px;
-                min-width: 200px;
-                min-height: 100px;
+                min-width: 220px;
+                min-height: 120px;
                 box-sizing: border-box;
                 background-color: #fafafa;
             }
 
             .parent {
                 font-weight: bold;
-                margin-top: 8px;
+                margin-top: 10px;
                 cursor: pointer;
                 user-select: none;
             }
 
             .child-group {
-                margin-left: 28px;
-                margin-top: 4px;
-                padding-left: 6px;
+                margin-left: 32px;
+                margin-top: 6px;
+                padding-left: 8px;
                 border-left: 1px dashed #ccc;
                 display: none;
             }
@@ -34,11 +34,21 @@
                 display: block;
             }
 
+            .child-group label {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 6px 0;
+                font-weight: normal;
+                color: #333;
+                opacity: 0.85;
+            }
+
             label {
                 display: flex;
                 align-items: center;
                 gap: 6px;
-                margin: 2px 0;
+                margin: 4px 0;
             }
 
             span.arrow {
@@ -46,6 +56,7 @@
                 display: inline-block;
                 text-align: center;
                 transition: transform 0.2s ease;
+                color: #666;
             }
 
             .expanded > label > span.arrow {
