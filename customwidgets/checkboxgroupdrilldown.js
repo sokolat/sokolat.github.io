@@ -4,7 +4,7 @@
         <style>
             :host {
                 display: block;
-                border: 1px solid #ccc;
+                border: 2px solid red;
                 border-radius: 6px;
                 padding: 10px;
                 font-family: Arial, sans-serif;
