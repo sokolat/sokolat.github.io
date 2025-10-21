@@ -17,14 +17,16 @@
 
             .parent {
                 font-weight: bold;
-                margin-top: 5px;
+                margin-top: 8px;
                 cursor: pointer;
                 user-select: none;
             }
 
             .child-group {
-                margin-left: 20px;
-                margin-top: 3px;
+                margin-left: 28px;
+                margin-top: 4px;
+                padding-left: 6px;
+                border-left: 1px dashed #ccc;
                 display: none;
             }
 
@@ -36,6 +38,18 @@
                 display: flex;
                 align-items: center;
                 gap: 6px;
+                margin: 2px 0;
+            }
+
+            span.arrow {
+                width: 14px;
+                display: inline-block;
+                text-align: center;
+                transition: transform 0.2s ease;
+            }
+
+            .expanded > label > span.arrow {
+                transform: rotate(90deg);
             }
         </style>
         <div id="container"></div>
@@ -68,13 +82,13 @@
                 parentDiv.classList.add("parent");
 
                 const parentLabel = document.createElement("label");
+                const arrow = document.createElement("span");
+                arrow.textContent = "▶";
+                arrow.classList.add("arrow");
+
                 const parentCheckbox = document.createElement("input");
                 parentCheckbox.type = "checkbox";
                 parentCheckbox.dataset.parent = parent;
-
-                const arrow = document.createElement("span");
-                arrow.textContent = "▶";
-                arrow.style.transition = "transform 0.2s ease";
 
                 parentLabel.appendChild(arrow);
                 parentLabel.appendChild(parentCheckbox);
@@ -98,13 +112,14 @@
 
                 parentDiv.appendChild(childGroup);
 
+                // Expand/collapse toggle
                 parentLabel.addEventListener("click", (e) => {
                     if (e.target.tagName !== "INPUT") {
                         parentDiv.classList.toggle("expanded");
-                        arrow.textContent = parentDiv.classList.contains("expanded") ? "▼" : "▶";
                     }
                 });
 
+                // Parent checkbox controls children
                 parentCheckbox.addEventListener("change", () => {
                     const checked = parentCheckbox.checked;
                     childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
