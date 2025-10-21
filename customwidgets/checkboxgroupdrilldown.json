@@ -17,13 +17,9 @@
 			"ignoreIntegrity": true
 		}
 	], "properties": {
-		"hierarchy": {
-			"type": "SelectionContext",
-			"description": "Sets the initial selection hierarchy for the checkbox group"
-		},
-		"selectionContext": {
-			"type": "SelectionContext",
-			"description": "The selection context defining the hierarchical data structure"
+		"selections": {
+			"type": "Selection[]",
+			"description": "The selection defining the hierarchical data structure"
 		},
 		"expandByDefault": {
 			"type": "boolean",
@@ -39,32 +35,21 @@
 		}
 	},
 	"methods": {
-		"setHierarchy": {
-			"description": "Sets the initial selection hierarchy for the checkbox group",
+		"setSelection": {
+			"description": "Sets the selection for the checkbox group",
 			"parameters": [
 				{
-					"name": "hierarchy",
-					"type": "SelectionContext",
-					"description": "The selection context defining the hierarchical data structure"
+					"name": "selections",
+					"type": "Selection[]",
+					"description": "The selection defining the hierarchical data structure"
 				}
 			],
-			"body": "this.hierarchy = hierarchy;"
+			"body": "this.selections = selections;"
 		},
-		"setSelectionContext": {
-			"description": "Sets the selection context for the checkbox group",
-			"parameters": [
-				{
-					"name": "selectionContext",
-					"type": "SelectionContext",
-					"description": "The selection context defining the hierarchical data structure"
-				}
-			],
-			"body": "this.selectionContext = selectionContext;"
-		},
-		"getSelectionContext": {
-			"returnType": "SelectionContext",
-			"description": "Gets the current selection context of the checkbox group",
-			"body": "return this.selectionContext;"
+		"getSelection": {
+			"returnType": "Selection[]",
+			"description": "Gets the current selection of the checkbox group",
+			"body": "return this.selections;"
 		}
 	},
 	"events": {

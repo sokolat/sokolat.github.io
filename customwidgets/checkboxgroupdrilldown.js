@@ -67,11 +67,20 @@
         constructor() {
             super();
             this._props = {};
-            this._data = {
-                "Fruits": ["Apple", "Banana", "Orange"],
-                "Vegetables": ["Carrot", "Lettuce", "Tomato"],
-                "Dairy": ["Milk", "Cheese"]
-            };
+            this._data = [
+                {
+                    "id": "S4_Client_AMS.service_manager", "label": "Service Manager", "parentId": "Governance_Attribute", "selected": "true"
+                },
+                {
+                    "id": "S4_Client_AMS.system_administrator", "label": "System Administrator", "parentId": "Governance_Attribute", "selected": "false"
+                },
+                {
+                    "id": "S4_Client_AMS.business_user", "label": "Business User", "parentId": "Governance_Attribute", "selected": "true"
+                },
+                {
+                    "id": "Governance_Attribute", "label": "Governance Attribute", "parentId": null, "selected": "false"
+                }
+            ];
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
@@ -85,48 +94,62 @@
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
-            for (const parent in this._data) {
+            // Build hierarchy from _data array
+            const hierarchy = {};
+            this._data.forEach(item => {
+                if (!item.parentId) {
+                    hierarchy[item.id] = { ...item, children: [] };
+                }
+            });
+            this._data.forEach(item => {
+                if (item.parentId && hierarchy[item.parentId]) {
+                    hierarchy[item.parentId].children.push(item);
+                }
+            });
+
+            // Render parent + children
+            Object.values(hierarchy).forEach(parent => {
                 const parentDiv = document.createElement("div");
                 parentDiv.classList.add("parent");
 
-                // Create header row with icon + checkbox + text
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
 
                 const toggleIcon = document.createElement("ui5-icon");
-                toggleIcon.setAttribute("name", "navigation-right-arrow"); // collapsed by default
+                toggleIcon.setAttribute("name", "navigation-right-arrow");
                 toggleIcon.classList.add("toggle-icon");
 
                 const parentCheckbox = document.createElement("input");
                 parentCheckbox.type = "checkbox";
-                parentCheckbox.dataset.parent = parent;
+                parentCheckbox.dataset.parent = parent.id;
+                parentCheckbox.checked = parent.selected === "true" || parent.selected === true;
 
-                const parentLabelText = document.createTextNode(" " + parent);
-
+                const parentLabelText = document.createTextNode(" " + parent.label);
                 header.appendChild(toggleIcon);
                 header.appendChild(parentCheckbox);
                 header.appendChild(parentLabelText);
-
                 parentDiv.appendChild(header);
 
-                // Child group container
+                // Child group
                 const childGroup = document.createElement("div");
                 childGroup.classList.add("child-group");
 
-                this._data[parent].forEach(child => {
+                parent.children.forEach(child => {
                     const childLabel = document.createElement("label");
                     const childCheckbox = document.createElement("input");
                     childCheckbox.type = "checkbox";
-                    childCheckbox.dataset.parent = parent;
-                    childCheckbox.dataset.child = child;
+                    childCheckbox.dataset.parent = parent.id;
+                    childCheckbox.dataset.child = child.id;
+                    childCheckbox.checked = child.selected === "true" || child.selected === true;
+
                     childLabel.appendChild(childCheckbox);
-                    childLabel.appendChild(document.createTextNode(" " + child));
+                    childLabel.appendChild(document.createTextNode(" " + child.label));
                     childGroup.appendChild(childLabel);
                 });
 
                 parentDiv.appendChild(childGroup);
 
-                // toggle collapse/expand when clicking header (excluding checkbox)
+                // Toggle expand/collapse
                 header.addEventListener("click", (e) => {
                     if (e.target.tagName !== "INPUT") {
                         parentDiv.classList.toggle("expanded");
@@ -146,12 +169,13 @@
                 });
 
                 container.appendChild(parentDiv);
-            }
+            });
         }
+
 
         onCustomWidgetAfterUpdate(changedProperties) {
             console.log("After update:", changedProperties);
-            this._data = changedProperties.hierarchy || this._data;
+            this._data = changedProperties.selections || this._data;
             this._render();
         }
     }
