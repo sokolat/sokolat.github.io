@@ -20,13 +20,15 @@
                 margin-top: 10px;
                 cursor: pointer;
                 user-select: none;
+                display: flex;
+                align-items: center;
             }
 
             .child-group {
                 margin-left: 32px;
                 margin-top: 6px;
                 padding-left: 8px;
-                border-left: 1px dashed #ccc;
+                border-left: 1px solid rgba(0,0,0,0.15);
                 display: none;
             }
 
@@ -51,16 +53,11 @@
                 margin: 4px 0;
             }
 
-            span.arrow {
-                width: 14px;
-                display: inline-block;
-                text-align: center;
-                transition: transform 0.2s ease;
+            ui5-icon.toggle-icon {
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
                 color: #666;
-            }
-
-            .expanded > label > span.arrow {
-                transform: rotate(90deg);
             }
         </style>
         <div id="container"></div>
@@ -76,7 +73,7 @@
                 "Dairy": ["Milk", "Cheese"]
             };
 
-            let shadowRoot = this.attachShadow({ mode: "open" });
+            const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
         }
 
@@ -86,26 +83,26 @@
 
         _render() {
             const container = this.shadowRoot.getElementById("container");
-            container.innerHTML = ""; // clear
+            container.innerHTML = "";
 
             for (const parent in this._data) {
                 const parentDiv = document.createElement("div");
                 parentDiv.classList.add("parent");
 
-                const parentLabel = document.createElement("label");
-                const arrow = document.createElement("span");
-                arrow.textContent = "▶";
-                arrow.classList.add("arrow");
+                // create toggle icon
+                const toggleIcon = document.createElement("ui5-icon");
+                toggleIcon.setAttribute("name", "navigation-right-arrow"); // collapsed by default
+                toggleIcon.classList.add("toggle-icon");
 
                 const parentCheckbox = document.createElement("input");
                 parentCheckbox.type = "checkbox";
                 parentCheckbox.dataset.parent = parent;
 
-                parentLabel.appendChild(arrow);
-                parentLabel.appendChild(parentCheckbox);
-                parentLabel.appendChild(document.createTextNode(" " + parent));
+                const parentLabelText = document.createTextNode(" " + parent);
 
-                parentDiv.appendChild(parentLabel);
+                parentDiv.appendChild(toggleIcon);
+                parentDiv.appendChild(parentCheckbox);
+                parentDiv.appendChild(parentLabelText);
 
                 const childGroup = document.createElement("div");
                 childGroup.classList.add("child-group");
@@ -123,14 +120,20 @@
 
                 parentDiv.appendChild(childGroup);
 
-                // Expand/collapse toggle
-                parentLabel.addEventListener("click", (e) => {
+                // toggle collapse/expand on click (not on checkbox)
+                parentDiv.addEventListener("click", (e) => {
                     if (e.target.tagName !== "INPUT") {
                         parentDiv.classList.toggle("expanded");
+                        toggleIcon.setAttribute(
+                            "name",
+                            parentDiv.classList.contains("expanded")
+                                ? "navigation-down-arrow"
+                                : "navigation-right-arrow"
+                        );
                     }
                 });
 
-                // Parent checkbox controls children
+                // parent checkbox controls children
                 parentCheckbox.addEventListener("change", () => {
                     const checked = parentCheckbox.checked;
                     childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
