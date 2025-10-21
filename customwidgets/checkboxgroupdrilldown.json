@@ -17,6 +17,10 @@
 			"ignoreIntegrity": true
 		}
 	], "properties": {
+		"hierarchy": {
+			"type": "SelectionContext",
+			"description": "Sets the initial selection hierarchy for the checkbox group"
+		},
 		"selectionContext": {
 			"type": "SelectionContext",
 			"description": "The selection context defining the hierarchical data structure"
@@ -35,6 +39,17 @@
 		}
 	},
 	"methods": {
+		"setHierarchy": {
+			"description": "Sets the initial selection hierarchy for the checkbox group",
+			"parameters": [
+				{
+					"name": "hierarchy",
+					"type": "SelectionContext",
+					"description": "The selection context defining the hierarchical data structure"
+				}
+			],
+			"body": "this.hierarchy = hierarchy;"
+		},
 		"setSelectionContext": {
 			"description": "Sets the selection context for the checkbox group",
 			"parameters": [

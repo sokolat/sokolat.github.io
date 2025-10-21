@@ -151,6 +151,8 @@
 
         onCustomWidgetAfterUpdate(changedProperties) {
             console.log("After update:", changedProperties);
+            this._data = changedProperties.hierarchy || this._data;
+            this._render();
         }
     }
 
