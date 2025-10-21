@@ -4,15 +4,12 @@
         <style>
             :host {
                 display: block;
-                border: 2px solid #0070f2;
-                border-radius: 6px;
                 padding: 12px;
                 font-family: Arial, sans-serif;
                 font-size: 14px;
                 min-width: 220px;
                 min-height: 120px;
                 box-sizing: border-box;
-                background-color: #fafafa;
             }
 
             .parent {
