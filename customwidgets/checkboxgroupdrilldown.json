@@ -45,6 +45,11 @@
 				}
 			],
 			"body": "this.selectionContext = selectionContext;"
+		},
+		"getSelectionContext": {
+			"returnType": "SelectionContext",
+			"description": "Gets the current selection context of the checkbox group",
+			"body": "return this.selectionContext;"
 		}
 	},
 	"events": {
