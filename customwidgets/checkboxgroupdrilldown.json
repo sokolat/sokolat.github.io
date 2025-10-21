@@ -34,7 +34,19 @@
 			"description": "Allow multiple selections"
 		}
 	},
-	"methods": {},
+	"methods": {
+		"setSelectionContext": {
+			"description": "Sets the selection context for the checkbox group",
+			"parameters": [
+				{
+					"name": "selectionContext",
+					"type": "SelectionContext",
+					"description": "The selection context defining the hierarchical data structure"
+				}
+			],
+			"body": "this.selectionContext = selectionContext;"
+		}
+	},
 	"events": {
 		"onSelect": {
 			"description": "Triggered when a checkbox is selected"
