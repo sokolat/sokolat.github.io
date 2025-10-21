@@ -1,0 +1,43 @@
+{
+	"id": "com.sap.sidya.checkboxgroupdrilldown",
+	"version": "1.0.0",
+	"name": "Check Box Group Drilldown",
+	"description": "A Check Box Group for Drilldown Selection",
+	"newInstancePrefix": "CheckBoxGroupDrillDown",
+	"icon": "",
+	"vendor": "Sidya",
+	"eula": "",
+	"license": "",
+	"webcomponents": [
+		{
+			"kind": "main",
+			"tag": "com-sap-sidya-checkboxgroupdrilldown-main",
+			"url": "https://sokolat.github.io/customwidgets/checkboxgroupdrilldown.js",
+			"integrity": "",
+			"ignoreIntegrity": true
+		}
+	], "properties": {
+		"selectionContext": {
+			"type": "SelectionContext",
+			"description": "The selection context defining the hierarchical data structure"
+		},
+		"expandByDefault": {
+			"type": "boolean",
+			"description": "Expand all nodes initially"
+		},
+		"showSelectAll": {
+			"type": "boolean",
+			"description": "Show a top-level Select All checkbox"
+		},
+		"multiSelect": {
+			"type": "boolean",
+			"description": "Allow multiple selections"
+		}
+	},
+	"methods": {},
+	"events": {
+		"onSelect": {
+			"description": "Triggered when a checkbox is selected"
+		}
+	}
+}
