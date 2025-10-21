@@ -16,12 +16,14 @@
             }
 
             .parent {
-                font-weight: bold;
                 margin-top: 10px;
-                cursor: pointer;
-                user-select: none;
+            }
+
+            .parent-header {
                 display: flex;
                 align-items: center;
+                cursor: pointer;
+                user-select: none;
             }
 
             .child-group {
@@ -89,7 +91,10 @@
                 const parentDiv = document.createElement("div");
                 parentDiv.classList.add("parent");
 
-                // create toggle icon
+                // Create header row with icon + checkbox + text
+                const header = document.createElement("div");
+                header.classList.add("parent-header");
+
                 const toggleIcon = document.createElement("ui5-icon");
                 toggleIcon.setAttribute("name", "navigation-right-arrow"); // collapsed by default
                 toggleIcon.classList.add("toggle-icon");
@@ -100,10 +105,13 @@
 
                 const parentLabelText = document.createTextNode(" " + parent);
 
-                parentDiv.appendChild(toggleIcon);
-                parentDiv.appendChild(parentCheckbox);
-                parentDiv.appendChild(parentLabelText);
+                header.appendChild(toggleIcon);
+                header.appendChild(parentCheckbox);
+                header.appendChild(parentLabelText);
 
+                parentDiv.appendChild(header);
+
+                // Child group container
                 const childGroup = document.createElement("div");
                 childGroup.classList.add("child-group");
 
@@ -120,8 +128,8 @@
 
                 parentDiv.appendChild(childGroup);
 
-                // toggle collapse/expand on click (not on checkbox)
-                parentDiv.addEventListener("click", (e) => {
+                // toggle collapse/expand when clicking header (excluding checkbox)
+                header.addEventListener("click", (e) => {
                     if (e.target.tagName !== "INPUT") {
                         parentDiv.classList.toggle("expanded");
                         toggleIcon.setAttribute(
@@ -133,7 +141,7 @@
                     }
                 });
 
-                // parent checkbox controls children
+                // Parent checkbox controls children
                 parentCheckbox.addEventListener("change", () => {
                     const checked = parentCheckbox.checked;
                     childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
