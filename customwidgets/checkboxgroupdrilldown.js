@@ -84,13 +84,7 @@
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
-        }
 
-        connectedCallback() {
-            this._render();
-        }
-
-        _render() {
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
@@ -172,11 +166,13 @@
             });
         }
 
+		onCustomWidgetBeforeUpdate(changedProperties) {
+			this._props = { ...this._props, ...changedProperties };
+		}
 
         onCustomWidgetAfterUpdate(changedProperties) {
             this._data = changedProperties.selections || this._data;
-            console.log("Updated selections:", this._data);
-            this._render();
+            console.log("Updated selections:", this._props);
         }
     }
 
