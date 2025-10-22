@@ -67,6 +67,7 @@
         constructor() {
             super();
             this._props = {};
+            this._data = [];
             /*
             this._data = [
                 {
