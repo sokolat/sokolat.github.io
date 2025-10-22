@@ -171,8 +171,9 @@
 		}
 
         onCustomWidgetAfterUpdate(changedProperties) {
-            this._data = changedProperties.selections || this._data;
-            console.log("Updated selections:", this._props);
+            if ("selections" in changedProperties) {
+                console.log("New selections:", changedProperties["selections"]);
+            }
         }
     }
 
