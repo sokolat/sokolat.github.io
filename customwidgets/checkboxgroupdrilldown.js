@@ -67,6 +67,7 @@
         constructor() {
             super();
             this._props = {};
+            /*
             this._data = [
                 {
                     "id": "S4_Client_AMS.service_manager", "label": "Service Manager", "parentId": "Governance_Attribute", "selected": "true"
@@ -81,6 +82,7 @@
                     "id": "Governance_Attribute", "label": "Governance Attribute", "parentId": null, "selected": "false"
                 }
             ];
+            */
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
@@ -172,7 +174,7 @@
 
         onCustomWidgetAfterUpdate(changedProperties) {
             if ("selections" in changedProperties) {
-                console.log("New selections:", changedProperties["selections"]);
+                this._data = changedProperties["selections"];
             }
         }
     }
