@@ -76,7 +76,8 @@
         _render() {
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
-
+            
+            console.log(container);
             console.log("Rendering with data:", this._data);
 
             // Build hierarchy from _data array
