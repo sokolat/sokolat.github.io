@@ -19,10 +19,16 @@
 
             .parent-header {
                 display: flex;
-                align-items: center;
+                align-items: center; /* vertical alignment */
                 cursor: pointer;
                 user-select: none;
                 gap: 8px; /* spacing between toggle, checkbox, label */
+            }
+
+            /* Ensure checkbox aligns perfectly */
+            .parent-header input[type="checkbox"] {
+                vertical-align: middle;
+                margin: 0; /* remove default margins */
             }
 
             .checkbox-label {
@@ -74,6 +80,8 @@
                 height: 16px;
                 cursor: pointer;
                 color: #666;
+                display: flex;
+                align-items: center; /* align with checkbox */
             }
         </style>
         <div id="container"></div>
