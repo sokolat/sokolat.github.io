@@ -68,20 +68,9 @@
             super();
             this._props = {};
             this._data = null;
-            this._isInitialized = false;
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
-        }
-
-        connectedCallback() {
-            console.log(this._data);
-            console.log(this._isInitialized);
-            
-            if (this._data && !this._isInitialized) {
-                this._render();
-                this._isInitialized = true;
-            }
         }
 
         _render() {
@@ -172,11 +161,9 @@
             if(changedProperties.selections) {
 
                 this._data = changedProperties.selections;
+                this._render();
 
-                if (this.isConnected) {
-                    this._render();
-                    this._isInitialized = true;
-                }
+                console.log("Updated data:", this._data);
             }
         }
     }
