@@ -94,6 +94,8 @@
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
+            console.log("Rendering with data:", this._data);
+
             // Build hierarchy from _data array
             const hierarchy = {};
             this._data.forEach(item => {
@@ -176,6 +178,7 @@
             if(changedProperties.selections) {
                 console.log("Selections updated:", changedProperties.selections);
                 this._data = changedProperties.selections;
+                console.log("Internal data set to:", this._data);
                 this._render();
             }
         }
