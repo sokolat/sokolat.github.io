@@ -69,11 +69,26 @@
                 margin: 4px 0;
             }
 
+            /* Ensure toggle icon reserves layout space even when empty so checkboxes align */
             ui5-icon.toggle-icon {
                 width: 16px;
                 height: 16px;
+                min-width: 16px;
+                display: inline-block;
                 cursor: pointer;
                 color: #666;
+                /* keep space but hide when not used */
+                visibility: hidden;
+            }
+
+            /* Reveal icon when the parent actually has children */
+            .parent.has-children .toggle-icon {
+                visibility: visible;
+            }
+
+            /* Keep checkboxes vertically aligned with the label */
+            input[type="checkbox"] {
+                vertical-align: middle;
             }
         </style>
         <div id="container"></div>
@@ -114,6 +129,8 @@
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
+                // mark wrapper when node has children so the icon becomes visible (reserves space for alignment)
+                if (node.children.length) wrapper.classList.add('has-children');
 
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
