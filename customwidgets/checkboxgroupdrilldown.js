@@ -77,85 +77,77 @@
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
-            // Build hierarchy from _data array
-            const hierarchy = {};
+            // Step 1: Build a map and roots array
+            const map = {};
+            const roots = [];
+
             this._data.forEach(item => {
-                if (!item.parentId) {
-                    hierarchy[item.id] = { ...item, children: [] };
-                }
+                map[item.id] = { ...item, children: [] };
             });
+
             this._data.forEach(item => {
-                if (item.parentId && hierarchy[item.parentId]) {
-                    hierarchy[item.parentId].children.push(item);
+                if (item.parentId) {
+                    if (map[item.parentId]) map[item.parentId].children.push(map[item.id]);
+                } else {
+                    roots.push(map[item.id]);
                 }
             });
 
-            console.log("Hierarchy:", hierarchy);
-
-            // Render parent + children
-            Object.values(hierarchy).forEach(parent => {
-                const parentDiv = document.createElement("div");
-                parentDiv.classList.add("parent");
+            // Step 2: Recursive render function
+            const renderNode = (node) => {
+                const wrapper = document.createElement("div");
+                wrapper.classList.add("parent");
 
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
 
                 const toggleIcon = document.createElement("ui5-icon");
-                toggleIcon.setAttribute("name", "navigation-right-arrow");
                 toggleIcon.classList.add("toggle-icon");
+                toggleIcon.setAttribute("name", node.children.length ? "navigation-right-arrow" : "");
 
-                const parentCheckbox = document.createElement("input");
-                parentCheckbox.type = "checkbox";
-                parentCheckbox.dataset.parent = parent.id;
-                parentCheckbox.checked = parent.selected === "true" || parent.selected === true;
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = node.selected === "true" || node.selected === true;
+                checkbox.dataset.id = node.id;
 
-                const parentLabelText = document.createTextNode(" " + parent.label);
                 header.appendChild(toggleIcon);
-                header.appendChild(parentCheckbox);
-                header.appendChild(parentLabelText);
-                parentDiv.appendChild(header);
+                header.appendChild(checkbox);
+                header.appendChild(document.createTextNode(" " + node.label));
+                wrapper.appendChild(header);
 
-                // Child group
-                const childGroup = document.createElement("div");
-                childGroup.classList.add("child-group");
+                if (node.children.length) {
+                    const childGroup = document.createElement("div");
+                    childGroup.classList.add("child-group");
+                    node.children.forEach(child => childGroup.appendChild(renderNode(child)));
+                    wrapper.appendChild(childGroup);
 
-                parent.children.forEach(child => {
-                    const childLabel = document.createElement("label");
-                    const childCheckbox = document.createElement("input");
-                    childCheckbox.type = "checkbox";
-                    childCheckbox.dataset.parent = parent.id;
-                    childCheckbox.dataset.child = child.id;
-                    childCheckbox.checked = child.selected === "true" || child.selected === true;
+                    // Expand/collapse
+                    header.addEventListener("click", (e) => {
+                        if (e.target.tagName !== "INPUT") {
+                            wrapper.classList.toggle("expanded");
+                            toggleIcon.setAttribute(
+                                "name",
+                                wrapper.classList.contains("expanded")
+                                    ? "navigation-down-arrow"
+                                    : "navigation-right-arrow"
+                            );
+                        }
+                    });
 
-                    childLabel.appendChild(childCheckbox);
-                    childLabel.appendChild(document.createTextNode(" " + child.label));
-                    childGroup.appendChild(childLabel);
-                });
+                    // Parent checkbox controls children
+                    checkbox.addEventListener("change", () => {
+                        const checked = checkbox.checked;
+                        childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
+                    });
+                }
 
-                parentDiv.appendChild(childGroup);
+                return wrapper;
+            };
 
-                // Toggle expand/collapse
-                header.addEventListener("click", (e) => {
-                    if (e.target.tagName !== "INPUT") {
-                        parentDiv.classList.toggle("expanded");
-                        toggleIcon.setAttribute(
-                            "name",
-                            parentDiv.classList.contains("expanded")
-                                ? "navigation-down-arrow"
-                                : "navigation-right-arrow"
-                        );
-                    }
-                });
-
-                // Parent checkbox controls children
-                parentCheckbox.addEventListener("change", () => {
-                    const checked = parentCheckbox.checked;
-                    childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
-                });
-
-                container.appendChild(parentDiv);
-            });
+            // Step 3: Render all roots
+            roots.forEach(root => container.appendChild(renderNode(root)));
         }
+
 
         onCustomWidgetAfterUpdate(changedProperties) {
             if(changedProperties.selections) {
