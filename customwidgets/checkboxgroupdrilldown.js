@@ -85,10 +85,29 @@
                 visibility: visible;
             }
 
-            /* Custom square checkbox visual to match screenshot */
-            input[type="checkbox"] {
-                -webkit-appearance: none;
-                appearance: none;
+            /* Custom checkbox: hide native control visually and draw a custom box for reliable styling and indeterminate state */
+            .checkbox-wrapper {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                margin-left: 4px;
+                margin-right: 8px;
+                flex: 0 0 22px;
+            }
+
+            .checkbox-wrapper input[type="checkbox"] {
+                /* keep native input for accessibility but visually hide it */
+                position: absolute;
+                width: 22px;
+                height: 22px;
+                margin: 0;
+                opacity: 0;
+                pointer-events: auto;
+                z-index: 2;
+                cursor: pointer;
+            }
+
+            .custom-checkbox {
                 width: 22px;
                 height: 22px;
                 min-width: 22px;
@@ -96,16 +115,13 @@
                 border-radius: 2px;
                 background-color: #fff;
                 box-sizing: border-box;
-                position: relative;
-                cursor: pointer;
                 display: inline-block;
-                vertical-align: middle;
-                outline: none;
-                transition: background-color 0.12s ease, border-color 0.12s ease;
+                position: relative;
+                transition: background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
             }
 
-            /* checkmark */
-            input[type="checkbox"]::after {
+            /* checkmark drawn inside the custom box */
+            .custom-checkbox::after {
                 content: "";
                 position: absolute;
                 left: 6px;
@@ -119,8 +135,8 @@
                 transition: opacity 0.12s ease, border-color 0.12s ease;
             }
 
-            /* partial / indeterminate visual: small blue square centered inside box */
-            input[type="checkbox"].indeterminate::before {
+            /* indeterminate visual: centered small square */
+            .custom-checkbox.indeterminate::before {
                 content: "";
                 position: absolute;
                 width: 12px;
@@ -133,26 +149,19 @@
                 opacity: 1;
             }
 
-            /* make sure indeterminate state doesn't show the checkmark */
-            input[type="checkbox"].indeterminate::after {
-                opacity: 0;
+            .custom-checkbox.indeterminate::after {
+                opacity: 0; /* hide checkmark when indeterminate */
             }
 
-            input[type="checkbox"]:checked {
+            .custom-checkbox.checked {
                 background-color: #0b78d1; /* blue fill */
                 border-color: #9aa2a8; /* slightly darker border */
             }
 
-            input[type="checkbox"]:checked::after {
+            .custom-checkbox.checked::after {
                 border-right-color: #fff;
                 border-bottom-color: #fff;
                 opacity: 1;
-            }
-
-            /* Slight spacing between checkbox and label to match screenshot */
-            .parent-header input[type="checkbox"] {
-                margin-left: 4px;
-                margin-right: 8px;
             }
 
         </style>
@@ -211,8 +220,17 @@
                 const isPartial = node.selected === "partial" || node.selected === "indeterminate";
                 checkbox.checked = isChecked;
                 checkbox.indeterminate = !!isPartial;
-                if (isPartial) checkbox.classList.add('indeterminate');
                 checkbox.dataset.id = node.id;
+
+                // build a wrapper that contains the native input and the visual box
+                const checkboxWrapper = document.createElement('span');
+                checkboxWrapper.classList.add('checkbox-wrapper');
+                const customBox = document.createElement('span');
+                customBox.classList.add('custom-checkbox');
+                if (isChecked) customBox.classList.add('checked');
+                if (isPartial) customBox.classList.add('indeterminate');
+                checkboxWrapper.appendChild(checkbox);
+                checkboxWrapper.appendChild(customBox);
 
                 // wrap label in span for truncation/hover
                 const labelSpan = document.createElement("span");
@@ -221,7 +239,7 @@
                 labelSpan.title = node.label; // fallback tooltip
 
                 header.appendChild(toggleIcon);
-                header.appendChild(checkbox);
+                header.appendChild(checkboxWrapper);
                 header.appendChild(labelSpan);
                 wrapper.appendChild(header);
 
@@ -247,7 +265,26 @@
                     // Parent checkbox controls children
                     checkbox.addEventListener("change", () => {
                         const checked = checkbox.checked;
-                        childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => { cb.checked = checked; cb.indeterminate = false; cb.classList.remove('indeterminate'); });
+                        // when parent toggles, clear indeterminate on children and update visuals
+                        childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
+                            cb.checked = checked;
+                            cb.indeterminate = false;
+                            cb.classList.remove('indeterminate');
+                            const siblingBox = cb.nextSibling; // our custom-box is next
+                            if (siblingBox && siblingBox.classList) {
+                                siblingBox.classList.toggle('checked', checked);
+                                siblingBox.classList.remove('indeterminate');
+                            }
+                        });
+                        // update own visual
+                        customBox.classList.toggle('checked', checked);
+                        customBox.classList.remove('indeterminate');
+                    });
+
+                    // sync visual when a child input changes directly
+                    checkbox.addEventListener('input', () => {
+                        customBox.classList.toggle('checked', checkbox.checked);
+                        if (!checkbox.checked) customBox.classList.remove('indeterminate');
                     });
                 }
 
