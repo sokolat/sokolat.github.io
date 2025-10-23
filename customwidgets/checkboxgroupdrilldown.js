@@ -67,8 +67,6 @@
         constructor() {
             super();
             this._props = {};
-            this._data = [];
-            /*
             this._data = [
                 {
                     "id": "S4_Client_AMS.service_manager", "label": "Service Manager", "parentId": "Governance_Attribute", "selected": "true"
@@ -83,11 +81,16 @@
                     "id": "Governance_Attribute", "label": "Governance Attribute", "parentId": null, "selected": "false"
                 }
             ];
-            */
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
+        }
 
+        connectedCallback() {
+            this._render();
+        }
+
+        _render() {
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
@@ -169,13 +172,9 @@
             });
         }
 
-		onCustomWidgetBeforeUpdate(changedProperties) {
-			this._props = { ...this._props, ...changedProperties };
-		}
-
         onCustomWidgetAfterUpdate(changedProperties) {
-            if ("selections" in changedProperties) {
-                this._data = changedProperties["selections"];
+            if(changedProperties.selections) {
+                console.log("Selections updated:", changedProperties.selections);
             }
         }
     }
