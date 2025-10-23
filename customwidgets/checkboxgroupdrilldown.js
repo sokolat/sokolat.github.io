@@ -76,9 +76,6 @@
         _render() {
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
-            
-            console.log(container);
-            console.log("Rendering with data:", this._data);
 
             // Build hierarchy from _data array
             const hierarchy = {};
@@ -92,6 +89,8 @@
                     hierarchy[item.parentId].children.push(item);
                 }
             });
+
+            console.log("Hierarchy:", hierarchy);
 
             // Render parent + children
             Object.values(hierarchy).forEach(parent => {
@@ -160,11 +159,8 @@
 
         onCustomWidgetAfterUpdate(changedProperties) {
             if(changedProperties.selections) {
-
                 this._data = changedProperties.selections;
                 this._render();
-
-                console.log("Updated data:", this._data);
             }
         }
     }
