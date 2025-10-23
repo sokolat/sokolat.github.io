@@ -77,14 +77,11 @@
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
-            // Step 1: Build a map and roots array
+            // 1️⃣ Build hierarchy map
             const map = {};
             const roots = [];
 
-            this._data.forEach(item => {
-                map[item.id] = { ...item, children: [] };
-            });
-
+            this._data.forEach(item => map[item.id] = { ...item, children: [] });
             this._data.forEach(item => {
                 if (item.parentId) {
                     if (map[item.parentId]) map[item.parentId].children.push(map[item.id]);
@@ -93,7 +90,28 @@
                 }
             });
 
-            // Step 2: Recursive render function
+            // 2️⃣ Update parent state (gray & disabled if partially selected)
+            const updateParentState = (parentWrapper) => {
+                if (!parentWrapper) return;
+                const parentCheckbox = parentWrapper.querySelector(":scope > .parent-header > input[type='checkbox']");
+                const childCheckboxes = parentWrapper.querySelectorAll(":scope > .child-group input[type='checkbox']");
+
+                const total = childCheckboxes.length;
+                const checked = Array.from(childCheckboxes).filter(cb => cb.checked).length;
+
+                if (checked === 0 || checked === total) {
+                    parentCheckbox.disabled = false;
+                    parentCheckbox.style.backgroundColor = "";
+                } else {
+                    parentCheckbox.disabled = true;
+                    parentCheckbox.style.backgroundColor = "#ccc";
+                }
+
+                // recursively update ancestors
+                updateParentState(parentWrapper.parentNode.closest(".parent"));
+            };
+
+            // 3️⃣ Recursive render
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
@@ -101,27 +119,63 @@
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
 
-                const toggleIcon = document.createElement("ui5-icon");
-                toggleIcon.classList.add("toggle-icon");
-                toggleIcon.setAttribute("name", node.children.length ? "navigation-right-arrow" : "");
+                // Toggle icon only if node has children
+                let toggleIcon;
+                if (node.children.length) {
+                    toggleIcon = document.createElement("ui5-icon");
+                    toggleIcon.classList.add("toggle-icon");
+                    toggleIcon.setAttribute("name", "navigation-right-arrow");
+                    header.appendChild(toggleIcon);
+                }
 
+                // Checkbox
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.checked = node.selected === "true" || node.selected === true;
-                checkbox.dataset.id = node.id;
 
-                header.appendChild(toggleIcon);
+                // Leaf nodes: normal selection
+                if (node.children.length === 0) {
+                    checkbox.checked = node.selected === "true" || node.selected === true;
+                    checkbox.dataset.id = node.id;
+                } else {
+                    checkbox.checked = false; // will update dynamically
+                }
+
+                // Label with spacing and ellipsis
+                const labelText = document.createElement("span");
+                labelText.textContent = node.label;
+                labelText.style.marginLeft = "6px";
+                labelText.style.whiteSpace = "nowrap";
+                labelText.style.overflow = "hidden";
+                labelText.style.textOverflow = "ellipsis";
+                labelText.style.maxWidth = node.children.length ? "200px" : "180px";
+
                 header.appendChild(checkbox);
-                header.appendChild(document.createTextNode(" " + node.label));
+                header.appendChild(labelText);
                 wrapper.appendChild(header);
 
                 if (node.children.length) {
                     const childGroup = document.createElement("div");
                     childGroup.classList.add("child-group");
-                    node.children.forEach(child => childGroup.appendChild(renderNode(child)));
+
+                    node.children.forEach(child => {
+                        const childWrapper = renderNode(child);
+
+                        // Style child label
+                        const childLabel = childWrapper.querySelector("span");
+                        if (childLabel) {
+                            childLabel.style.marginLeft = "6px";
+                            childLabel.style.whiteSpace = "nowrap";
+                            childLabel.style.overflow = "hidden";
+                            childLabel.style.textOverflow = "ellipsis";
+                            childLabel.style.maxWidth = "180px";
+                        }
+
+                        childGroup.appendChild(childWrapper);
+                    });
+
                     wrapper.appendChild(childGroup);
 
-                    // Expand/collapse
+                    // Expand/collapse toggle
                     header.addEventListener("click", (e) => {
                         if (e.target.tagName !== "INPUT") {
                             wrapper.classList.toggle("expanded");
@@ -134,19 +188,29 @@
                         }
                     });
 
-                    // Parent checkbox controls children
+                    // Parent checkbox click → select/deselect all children
                     checkbox.addEventListener("change", () => {
                         const checked = checkbox.checked;
                         childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
+                        updateParentState(wrapper.parentNode.closest(".parent"));
                     });
+
+                    // Child checkboxes → update parent state dynamically
+                    childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
+                        cb.addEventListener("change", () => updateParentState(wrapper));
+                    });
+
+                    // Initial parent state
+                    updateParentState(wrapper);
                 }
 
                 return wrapper;
             };
 
-            // Step 3: Render all roots
+            // 4️⃣ Render all root nodes
             roots.forEach(root => container.appendChild(renderNode(root)));
         }
+
 
 
         onCustomWidgetAfterUpdate(changedProperties) {
