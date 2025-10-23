@@ -75,6 +75,9 @@
         }
 
         connectedCallback() {
+            console.log(this._data);
+            console.log(this._isInitialized);
+            
             if (this._data && !this._isInitialized) {
                 this._render();
                 this._isInitialized = true;
@@ -167,10 +170,9 @@
 
         onCustomWidgetAfterUpdate(changedProperties) {
             if(changedProperties.selections) {
-                console.log("Selections updated:", changedProperties.selections);
+
                 this._data = changedProperties.selections;
-                console.log("Internal data set to:", this._data);
-                
+
                 if (this.isConnected) {
                     this._render();
                     this._isInitialized = true;
