@@ -67,27 +67,18 @@
         constructor() {
             super();
             this._props = {};
-            this._data = [
-                {
-                    "id": "S4_Client_AMS.service_manager", "label": "Service Manager", "parentId": "Governance_Attribute", "selected": "true"
-                },
-                {
-                    "id": "S4_Client_AMS.system_administrator", "label": "System Administrator", "parentId": "Governance_Attribute", "selected": "false"
-                },
-                {
-                    "id": "S4_Client_AMS.business_user", "label": "Business User", "parentId": "Governance_Attribute", "selected": "true"
-                },
-                {
-                    "id": "Governance_Attribute", "label": "Governance Attribute", "parentId": null, "selected": "false"
-                }
-            ];
+            this._data = null;
+            this._isInitialized = false;
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
         }
 
         connectedCallback() {
-            this._render();
+            if (this._data && !this._isInitialized) {
+                this._render();
+                this._isInitialized = true;
+            }
         }
 
         _render() {
@@ -179,7 +170,11 @@
                 console.log("Selections updated:", changedProperties.selections);
                 this._data = changedProperties.selections;
                 console.log("Internal data set to:", this._data);
-                this._render();
+                
+                if (this.isConnected) {
+                    this._render();
+                    this._isInitialized = true;
+                }
             }
         }
     }
