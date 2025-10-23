@@ -22,6 +22,22 @@
                 align-items: center;
                 cursor: pointer;
                 user-select: none;
+                gap: 8px; /* spacing between toggle, checkbox, label */
+            }
+
+            .checkbox-label {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px; /* truncated width */
+                display: inline-block;
+                vertical-align: middle;
+                transition: max-width 0.3s ease;
+            }
+
+            /* Expand label smoothly on hover */
+            .parent-header:hover .checkbox-label {
+                max-width: 400px; /* expanded width on hover */
             }
 
             .child-group {
@@ -62,6 +78,7 @@
         </style>
         <div id="container"></div>
     `;
+
 
     class CheckBoxGroupDrillDown extends HTMLElement {
         constructor() {
@@ -110,9 +127,15 @@
                 checkbox.checked = node.selected === "true" || node.selected === true;
                 checkbox.dataset.id = node.id;
 
+                // wrap label in span for truncation/hover
+                const labelSpan = document.createElement("span");
+                labelSpan.classList.add("checkbox-label");
+                labelSpan.textContent = node.label;
+                labelSpan.title = node.label; // fallback tooltip
+
                 header.appendChild(toggleIcon);
                 header.appendChild(checkbox);
-                header.appendChild(document.createTextNode(" " + node.label));
+                header.appendChild(labelSpan);
                 wrapper.appendChild(header);
 
                 if (node.children.length) {
