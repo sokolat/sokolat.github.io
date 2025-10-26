@@ -148,6 +148,8 @@
                     counter += map[node.children[i].id].selected === "true" ? 1 : 0;
                 }
 
+                console.log(counter);
+
                 if (counter === node.children.length && node.children.length > 0) {
                     checkbox.indeterminate = false;
                     checkbox.checked = true;
