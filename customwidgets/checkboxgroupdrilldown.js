@@ -1,130 +1,111 @@
 (function () {
     let template = document.createElement("template");
     template.innerHTML = `
-        :host {
-            display: block;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            background-color: #fafafa;
-
-            /* 🔹 Layout & spacing */
-            padding: 12px;
-            min-width: 220px;
-            min-height: 120px;
-
-            /* 🔹 Responsive behavior */
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        #container {
-            display: block;
-            box-sizing: border-box;
-
-            /* 🔹 Let content flow and scroll naturally */
-            width: 100%;
-            height: auto;
-            max-height: 100%;
-            overflow-y: auto;
-            padding-right: 4px; /* small gap to prevent scrollbar overlap */
-        }
-
-        .parent {
-            margin-top: 10px;
-            word-wrap: break-word;
-        }
-
-        .parent-header {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            gap: 8px;
-            flex-wrap: wrap; /* 🔹 wrap text on smaller screens */
-        }
-
-        .checkbox-label {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 60vw; /* 🔹 dynamic truncation width */
-            display: inline-block;
-            vertical-align: middle;
-            transition: max-width 0.3s ease;
-        }
-
-        .parent-header:hover .checkbox-label {
-            max-width: 80vw; /* expand on hover, still responsive */
-        }
-
-        .child-group {
-            margin-left: 32px;
-            margin-top: 6px;
-            padding-left: 8px;
-            border-left: 1px solid rgba(0,0,0,0.15);
-            display: none;
-        }
-
-        .expanded > .child-group {
-            display: block;
-        }
-
-        .child-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 6px 0;
-            font-weight: normal;
-            color: #333;
-            opacity: 0.85;
-            flex-wrap: wrap;
-        }
-
-        label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 4px 0;
-        }
-
-        /* 🔹 Keep icon alignment consistent */
-        ui5-icon.toggle-icon {
-            width: 16px;
-            height: 16px;
-            min-width: 16px;
-            display: inline-block;
-            cursor: pointer;
-            color: #666;
-            visibility: hidden;
-        }
-
-        .parent.has-children .toggle-icon {
-            visibility: visible;
-        }
-
-        /* 🔹 Keep checkboxes vertically aligned */
-        input[type="checkbox"] {
-            vertical-align: middle;
-        }
-
-        /* 🔹 Responsive tweak for narrow views */
-        @media (max-width: 480px) {
+        <style>
             :host {
-                font-size: 13px;
-                padding: 8px;
+                display: block;
+                padding: 12px;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                box-sizing: border-box;
+                background-color: #fafafa;
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            #container {
+                display: block;
+                box-sizing: border-box;
+
+                /* 🔹 Let content flow and scroll naturally */
+                width: 100%;
+                height: auto;
+                max-height: 100%;
+                overflow-y: auto;
+                padding-right: 4px; /* small gap to prevent scrollbar overlap */
+            }
+
+            .parent {
+                margin-top: 10px;
+            }
+
+            .parent-header {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                user-select: none;
+                gap: 8px; /* spacing between toggle, checkbox, label */
             }
 
             .checkbox-label {
-                max-width: 70vw;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px; /* truncated width */
+                display: inline-block;
+                vertical-align: middle;
+                transition: max-width 0.3s ease;
+            }
+
+            /* Expand label smoothly on hover */
+            .parent-header:hover .checkbox-label {
+                max-width: 400px; /* expanded width on hover */
             }
 
             .child-group {
-                margin-left: 20px;
+                margin-left: 32px;
+                margin-top: 6px;
+                padding-left: 8px;
+                border-left: 1px solid rgba(0,0,0,0.15);
+                display: none;
             }
-        }
+
+            .expanded > .child-group {
+                display: block;
+            }
+
+            .child-group label {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 6px 0;
+                font-weight: normal;
+                color: #333;
+                opacity: 0.85;
+            }
+
+            label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin: 4px 0;
+            }
+
+            /* Ensure toggle icon reserves layout space even when empty so checkboxes align */
+            ui5-icon.toggle-icon {
+                width: 16px;
+                height: 16px;
+                min-width: 16px;
+                display: inline-block;
+                cursor: pointer;
+                color: #666;
+                /* keep space but hide when not used */
+                visibility: hidden;
+            }
+
+            /* Reveal icon when the parent actually has children */
+            .parent.has-children .toggle-icon {
+                visibility: visible;
+            }
+
+            /* Keep checkboxes vertically aligned with the label */
+            input[type="checkbox"] {
+                vertical-align: middle;
+            }
+        </style>
+        <div id="container"></div>
     `;
 
 
