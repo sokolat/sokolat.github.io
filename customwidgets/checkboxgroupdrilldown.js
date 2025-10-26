@@ -109,7 +109,7 @@
             const container = this.shadowRoot.getElementById("container");
             container.innerHTML = "";
 
-            // Step 1: Build a map and roots array
+            // Step 1: Build map and roots
             const map = {};
             const roots = [];
 
@@ -125,12 +125,36 @@
                 }
             });
 
+            // Utility to update parent states recursively
+            const updateParentState = (checkbox) => {
+                const parentHeader = checkbox.closest(".child-group")?.previousElementSibling;
+                if (!parentHeader) return;
+
+                const parentCheckbox = parentHeader.querySelector("input[type='checkbox']");
+                const childCheckboxes = parentHeader.nextElementSibling.querySelectorAll("input[type='checkbox']");
+
+                const checkedCount = Array.from(childCheckboxes).filter(cb => cb.checked).length;
+
+                if (checkedCount === childCheckboxes.length) {
+                    parentCheckbox.checked = true;
+                    parentCheckbox.indeterminate = false;
+                } else if (checkedCount === 0) {
+                    parentCheckbox.checked = false;
+                    parentCheckbox.indeterminate = false;
+                } else {
+                    parentCheckbox.checked = false;
+                    parentCheckbox.indeterminate = true;
+                }
+
+                // Recursively update ancestors
+                updateParentState(parentCheckbox);
+            };
+
             // Step 2: Recursive render function
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
-                // mark wrapper when node has children so the icon becomes visible (reserves space for alignment)
-                if (node.children.length) wrapper.classList.add('has-children');
+                if (node.children.length) wrapper.classList.add("has-children");
 
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
@@ -141,32 +165,13 @@
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-
-                var counter = 0;
-                
-                for (var i = 0; i < node.children.length; i++) {
-                    counter += map[node.children[i].id].selected === "true" ? 1 : 0;
-                }
-
-                console.log(counter);
-
-                if (counter === node.children.length && node.children.length > 0) {
-                    checkbox.indeterminate = false;
-                    checkbox.checked = true;
-                } else if (counter > 0 && counter < node.children.length) {
-                    checkbox.indeterminate = true;
-                } else {
-                    checkbox.indeterminate = false;
-                    checkbox.checked = false;
-                }
-
+                checkbox.checked = node.selected === "true" || node.selected === true;
                 checkbox.dataset.id = node.id;
 
-                // wrap label in span for truncation/hover
                 const labelSpan = document.createElement("span");
                 labelSpan.classList.add("checkbox-label");
                 labelSpan.textContent = node.label;
-                labelSpan.title = node.label; // fallback tooltip
+                labelSpan.title = node.label;
 
                 header.appendChild(toggleIcon);
                 header.appendChild(checkbox);
@@ -176,10 +181,15 @@
                 if (node.children.length) {
                     const childGroup = document.createElement("div");
                     childGroup.classList.add("child-group");
-                    node.children.forEach(child => childGroup.appendChild(renderNode(child)));
+
+                    node.children.forEach(child => {
+                        const childEl = renderNode(child);
+                        childGroup.appendChild(childEl);
+                    });
+
                     wrapper.appendChild(childGroup);
 
-                    // Expand/collapse
+                    // Expand/collapse logic
                     header.addEventListener("click", (e) => {
                         if (e.target.tagName !== "INPUT") {
                             wrapper.classList.toggle("expanded");
@@ -195,9 +205,20 @@
                     // Parent checkbox controls children
                     checkbox.addEventListener("change", () => {
                         const checked = checkbox.checked;
-                        childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checked);
+                        checkbox.indeterminate = false;
+                        childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
+                            cb.checked = checked;
+                            cb.indeterminate = false;
+                        });
+                        // Update ancestor state
+                        updateParentState(checkbox);
                     });
                 }
+
+                // Child checkbox change should update parents
+                checkbox.addEventListener("change", () => {
+                    updateParentState(checkbox);
+                });
 
                 return wrapper;
             };
@@ -205,6 +226,7 @@
             // Step 3: Render all roots
             roots.forEach(root => container.appendChild(renderNode(root)));
         }
+
 
 
         onCustomWidgetAfterUpdate(changedProperties) {
