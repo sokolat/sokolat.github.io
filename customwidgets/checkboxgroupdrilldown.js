@@ -125,6 +125,8 @@
                 }
             });
 
+            console.log(roots);
+
             // Step 2: Recursive render function
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
@@ -144,7 +146,6 @@
 
                 var counter = 0;
 
-                console.log(node.children);
                 for (var i = 0; i < node.children.length; i++) {
                     console.log(map[node.children[i]]);
                     counter += map[node.children[i]].selected === "true" ? 1 : 0;
