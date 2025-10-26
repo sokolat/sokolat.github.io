@@ -119,13 +119,43 @@
 
             this._data.forEach(item => {
                 if (item.parentId) {
-                    if (map[item.parentId]) map[item.parentId].children.push(map[item.id]);
+                    map[item.parentId]?.children.push(map[item.id]);
                 } else {
                     roots.push(map[item.id]);
                 }
             });
 
-            // Utility to update parent states recursively
+            // 🔹 Recursive helper to compute selection state
+            const computeSelectionState = (node) => {
+                if (!node.children.length) {
+                    // leaf node — interpret "true"/"false"/"" consistently
+                    node.selected = node.selected === true || node.selected === "true";
+                    node.indeterminate = false;
+                    return node.selected ? 1 : 0;
+                }
+
+                // for non-leaves, compute state of all children first
+                const childStates = node.children.map(computeSelectionState);
+                const checkedCount = childStates.filter(Boolean).length;
+
+                if (checkedCount === node.children.length) {
+                    node.selected = true;
+                    node.indeterminate = false;
+                } else if (checkedCount === 0) {
+                    node.selected = false;
+                    node.indeterminate = false;
+                } else {
+                    node.selected = false;
+                    node.indeterminate = true;
+                }
+
+                return node.selected ? 1 : node.indeterminate ? 0.5 : 0;
+            };
+
+            // 🔹 Compute all initial selection states
+            roots.forEach(computeSelectionState);
+
+            // 🔹 Function to update parent when children change
             const updateParentState = (checkbox) => {
                 const parentHeader = checkbox.closest(".child-group")?.previousElementSibling;
                 if (!parentHeader) return;
@@ -146,11 +176,10 @@
                     parentCheckbox.indeterminate = true;
                 }
 
-                // Recursively update ancestors
                 updateParentState(parentCheckbox);
             };
 
-            // Step 2: Recursive render function
+            // Step 2: Recursive render
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
@@ -165,7 +194,8 @@
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.checked = node.selected === "true" || node.selected === true;
+                checkbox.checked = !!node.selected;
+                checkbox.indeterminate = !!node.indeterminate;
                 checkbox.dataset.id = node.id;
 
                 const labelSpan = document.createElement("span");
@@ -183,13 +213,11 @@
                     childGroup.classList.add("child-group");
 
                     node.children.forEach(child => {
-                        const childEl = renderNode(child);
-                        childGroup.appendChild(childEl);
+                        childGroup.appendChild(renderNode(child));
                     });
-
                     wrapper.appendChild(childGroup);
 
-                    // Expand/collapse logic
+                    // expand/collapse
                     header.addEventListener("click", (e) => {
                         if (e.target.tagName !== "INPUT") {
                             wrapper.classList.toggle("expanded");
@@ -202,7 +230,7 @@
                         }
                     });
 
-                    // Parent checkbox controls children
+                    // parent controls children
                     checkbox.addEventListener("change", () => {
                         const checked = checkbox.checked;
                         checkbox.indeterminate = false;
@@ -210,12 +238,11 @@
                             cb.checked = checked;
                             cb.indeterminate = false;
                         });
-                        // Update ancestor state
                         updateParentState(checkbox);
                     });
                 }
 
-                // Child checkbox change should update parents
+                // child affects parent
                 checkbox.addEventListener("change", () => {
                     updateParentState(checkbox);
                 });
@@ -226,8 +253,6 @@
             // Step 3: Render all roots
             roots.forEach(root => container.appendChild(renderNode(root)));
         }
-
-
 
         onCustomWidgetAfterUpdate(changedProperties) {
             if(changedProperties.selections) {
