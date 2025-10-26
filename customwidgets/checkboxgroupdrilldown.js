@@ -144,6 +144,7 @@
 
                 var counter = 0;
 
+                console.log(node.children);
                 for (var i = 0; i < node.children.length; i++) {
                     console.log(map[node.children[i]]);
                     counter += map[node.children[i]].selected === "true" ? 1 : 0;
