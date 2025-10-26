@@ -93,21 +93,6 @@
                 vertical-align: middle;
             }
 
-            @media (max-width: 480px) {
-                :host {
-                    font-size: 13px;
-                    padding: 8px;
-                }
-
-                .checkbox-label {
-                    max-width: 70vw;
-                }
-
-                .child-group {
-                    margin-left: 20px;
-                }
-            }
-                
         </style>
         <div id="container"></div>
     `;
