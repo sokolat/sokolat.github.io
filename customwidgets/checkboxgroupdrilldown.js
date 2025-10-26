@@ -143,8 +143,9 @@
                 checkbox.type = "checkbox";
 
                 var counter = 0;
-                
+
                 for (var i = 0; i < node.children.length; i++) {
+                    console.log(map[node.children[i]]);
                     counter += map[node.children[i]].selected === "true" ? 1 : 0;
                 }
 
