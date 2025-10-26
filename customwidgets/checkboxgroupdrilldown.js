@@ -141,7 +141,22 @@
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.checked = node.selected === "true" || node.selected === true;
+                
+                counter = 0
+                for (var i = 0; i < node.children.length; i++) {
+                    counter += map[node.children[i]].selected === "true" ? 1 : 0;
+                }
+
+                if (counter === node.children.length && node.children.length > 0) {
+                    checkbox.indeterminate = false;
+                    checkbox.checked = true;
+                } else if (counter > 0 && counter < node.children.length) {
+                    checkbox.indeterminate = true;
+                } else {
+                    checkbox.indeterminate = false;
+                    checkbox.checked = false;
+                }
+
                 checkbox.dataset.id = node.id;
 
                 // wrap label in span for truncation/hover
