@@ -15,18 +15,6 @@
                 overflow-x: hidden;
             }
 
-            #container {
-                display: block;
-                box-sizing: border-box;
-
-                /* 🔹 Let content flow and scroll naturally */
-                width: 100%;
-                height: auto;
-                max-height: 100%;
-                overflow-y: auto;
-                padding-right: 4px; /* small gap to prevent scrollbar overlap */
-            }
-
             .parent {
                 margin-top: 10px;
             }
@@ -104,6 +92,22 @@
             input[type="checkbox"] {
                 vertical-align: middle;
             }
+
+            @media (max-width: 480px) {
+                :host {
+                    font-size: 13px;
+                    padding: 8px;
+                }
+
+                .checkbox-label {
+                    max-width: 70vw;
+                }
+
+                .child-group {
+                    margin-left: 20px;
+                }
+            }
+                
         </style>
         <div id="container"></div>
     `;
