@@ -254,6 +254,14 @@
                         if (parentData) {
                             parentData.selected = checked;
                         }
+
+                        const event = new CustomEvent("onSelect", {
+                        detail: this._data,
+                        bubbles: true,
+                        composed: true
+                        });
+
+                        this.dispatchEvent(event);
                         updateParentState(checkbox);
                     });
                 }
@@ -265,7 +273,6 @@
                     if (dataItem) {
                         dataItem.selected = checkbox.checked;
                     }
-                    console.log(dataItem);
                     updateParentState(checkbox);
                 });
 
