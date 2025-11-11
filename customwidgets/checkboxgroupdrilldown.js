@@ -268,6 +268,10 @@
                     if (dataItem) {
                         dataItem.selected = checkbox.checked;
                     }
+
+                    const event = new CustomEvent("onSelect");
+                    this.dispatchEvent(event);
+
                     updateParentState(checkbox);
                 });
 
