@@ -128,8 +128,6 @@
                 this._map[item.id].children = [];
             });
 
-            console.log("Initial map:", this._map);
-
             this._data.forEach(item => {
                 if (item.parentId) {
                     this._map[item.parentId]?.children.push(this._map[item.id]);
@@ -138,7 +136,8 @@
                 }
             });
 
-            this._map['S4_Client_AMS.tms'].selected = "true";
+            console.log("Initial map:", this._map);
+            this._map['Classification_Attribute'].selected = "true";
             console.log(this._map);
             console.log(this._data);
 
