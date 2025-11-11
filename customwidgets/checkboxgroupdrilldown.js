@@ -136,10 +136,7 @@
                 }
             });
 
-            console.log("Initial map:", this._map);
             this._map['Classification_Attribute'].selected = "true";
-            console.log(this._map);
-            console.log(this._data);
 
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
