@@ -124,8 +124,7 @@
             */
 
             this._data.forEach(item => {
-                this._map[item.id] = item;
-                this._map[item.id].children = [];
+                this._map[item.id] = {...item, children: [] };
             });
 
             this._data.forEach(item => {
@@ -138,8 +137,10 @@
             
             console.log(this._map['Classification_Attribute']);
             this._map['Classification_Attribute'].selected = "true";
+            const pos = this._data.map(e => e.id).indexOf('Classification_Attribute');
             console.log(this._map['Classification_Attribute']);
-            console.log(this._data);
+            this._data[pos].selected = "true";
+            console.log(this._data[pos]);
             
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
