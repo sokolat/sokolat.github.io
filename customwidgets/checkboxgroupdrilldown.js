@@ -138,6 +138,10 @@
                 }
             });
 
+            this._map['S4_Client_AMS.tms'].selected = "true";
+            console.log(this._map);
+            console.log(this._data);
+
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
                 if (!node.children.length) {
