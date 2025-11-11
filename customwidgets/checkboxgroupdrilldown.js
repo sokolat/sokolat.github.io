@@ -248,21 +248,24 @@
                                 childData.selected = checked;
                             }
 
-                            console.log(this._data.find(d => d.id === cb.dataset.id));
-
                         });
 
                         const parentData = this._data.find(d => d.id === checkbox.dataset.id);
                         if (parentData) {
                             parentData.selected = checked;
                         }
-                        console.log(this._data.find(d => d.id === checkbox.dataset.id));
                         updateParentState(checkbox);
                     });
                 }
 
                 // child affects parent
                 checkbox.addEventListener("change", () => {
+
+                    const dataItem = this._data.find(d => d.id === checkbox.dataset.id);
+                    if (dataItem) {
+                        dataItem.selected = checkbox.checked;
+                    }
+                    console.log(dataItem);
                     updateParentState(checkbox);
                 });
 
