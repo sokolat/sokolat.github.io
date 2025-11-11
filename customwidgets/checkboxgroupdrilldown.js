@@ -257,6 +257,7 @@
 
                         const event = new CustomEvent("onSelect");
                         this.dispatchEvent(event);
+                        
                         updateParentState(checkbox);
                     });
                 }
