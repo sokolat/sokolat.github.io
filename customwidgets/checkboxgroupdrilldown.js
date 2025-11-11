@@ -248,13 +248,14 @@
                                 childData.selected = checked;
                             }
 
+                            console.log(this._data.find(d => d.id === cb.dataset.id));
+
                         });
 
                         const parentData = this._data.find(d => d.id === checkbox.dataset.id);
                         if (parentData) {
                             parentData.selected = checked;
                         }
-                        console.log(this._data.find(d => d.id === checkbox.dataset.id));
                         updateParentState(checkbox);
                     });
                 }
