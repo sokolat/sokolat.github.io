@@ -135,9 +135,12 @@
                     roots.push(this._map[item.id]);
                 }
             });
-
+            
+            console.log(this._map['Classification_Attribute']);
             this._map['Classification_Attribute'].selected = "true";
-
+            console.log(this._map['Classification_Attribute']);
+            console.log(this._data);
+            
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
                 if (!node.children.length) {
