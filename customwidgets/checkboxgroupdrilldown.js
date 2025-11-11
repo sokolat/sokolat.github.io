@@ -117,12 +117,6 @@
             // const map = {};
             const roots = [];
             
-            /*
-            this._data.forEach(item => {
-                this._map[item.id] = { ...item, children: [] };
-            });
-            */
-
             this._data.forEach(item => {
                 this._map[item.id] = {...item, children: [] };
             });
@@ -134,13 +128,6 @@
                     roots.push(this._map[item.id]);
                 }
             });
-            
-            console.log(this._map['Classification_Attribute']);
-            this._map['Classification_Attribute'].selected = "true";
-            const pos = this._data.map(e => e.id).indexOf('Classification_Attribute');
-            console.log(this._map['Classification_Attribute']);
-            this._data[pos].selected = "true";
-            console.log(this._data[pos]);
             
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
@@ -251,10 +238,24 @@
                     checkbox.addEventListener("change", () => {
                         const checked = checkbox.checked;
                         checkbox.indeterminate = false;
+
                         childGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
                             cb.checked = checked;
                             cb.indeterminate = false;
+
+                            const childData = this._data.find(d => d.id === cb.dataset.id);
+                            if (childData) {
+                                childData.selected = checked;
+                            }
+
                         });
+
+                        const parentData = this._data.find(d => d.id === checkbox.dataset.id);
+                        if (parentData) {
+                            parentData.selected = checked;
+                        }
+
+                        console.log(this._data.find(d => d.id === checkbox.dataset.id));
                         updateParentState(checkbox);
                     });
                 }
