@@ -128,6 +128,8 @@
                 }
             });
 
+            console.log("Constructed map and roots:", map, roots);
+
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
                 if (!node.children.length) {
