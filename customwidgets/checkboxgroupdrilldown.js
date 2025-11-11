@@ -101,8 +101,7 @@
     class CheckBoxGroupDrillDown extends HTMLElement {
         constructor() {
             super();
-            this._props = {};
-            this._data = null;
+            this._data = [];
             this._map = {};
 
             const shadowRoot = this.attachShadow({ mode: "open" });
@@ -257,7 +256,7 @@
 
                         const event = new CustomEvent("onSelect");
                         this.dispatchEvent(event);
-                        
+
                         updateParentState(checkbox);
                     });
                 }
