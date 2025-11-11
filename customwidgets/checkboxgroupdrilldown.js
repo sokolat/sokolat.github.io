@@ -255,12 +255,7 @@
                             parentData.selected = checked;
                         }
 
-                        const event = new CustomEvent("onSelect", {
-                        detail: this._data,
-                        bubbles: true,
-                        composed: true
-                        });
-
+                        const event = new CustomEvent("onSelect");
                         this.dispatchEvent(event);
                         updateParentState(checkbox);
                     });
