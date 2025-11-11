@@ -103,6 +103,7 @@
             super();
             this._props = {};
             this._data = null;
+            this._map = {};
 
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.content.cloneNode(true));
@@ -113,22 +114,29 @@
             container.innerHTML = "";
 
             // Step 1: Build map and roots
-            const map = {};
+            // const map = {};
             const roots = [];
+            
+            /*
+            this._data.forEach(item => {
+                this._map[item.id] = { ...item, children: [] };
+            });
+            */
 
             this._data.forEach(item => {
-                map[item.id] = { ...item, children: [] };
+                this._map[item.id] = item;
+                this._map[item.id].children = [];
             });
+
+            console.log("Initial map:", this._map);
 
             this._data.forEach(item => {
                 if (item.parentId) {
-                    map[item.parentId]?.children.push(map[item.id]);
+                    this._map[item.parentId]?.children.push(this._map[item.id]);
                 } else {
-                    roots.push(map[item.id]);
+                    roots.push(this._map[item.id]);
                 }
             });
-
-            console.log("Constructed map and roots:", map, roots);
 
             // 🔹 Recursive helper to compute selection state
             const computeSelectionState = (node) => {
