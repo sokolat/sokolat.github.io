@@ -244,14 +244,14 @@
 
                             const childData = this._data.find(d => d.id === cb.dataset.id);
                             if (childData) {
-                                childData.selected = checked;
+                                childData.selected = checked.toString();
                             }
 
                         });
 
                         const parentData = this._data.find(d => d.id === checkbox.dataset.id);
                         if (parentData) {
-                            parentData.selected = checked;
+                            parentData.selected = checked.toString();
                         }
 
                         const event = new CustomEvent("onSelect");
@@ -266,7 +266,7 @@
 
                     const dataItem = this._data.find(d => d.id === checkbox.dataset.id);
                     if (dataItem) {
-                        dataItem.selected = checkbox.checked;
+                        dataItem.selected = checkbox.checked.toString();
                     }
 
                     const event = new CustomEvent("onSelect");
