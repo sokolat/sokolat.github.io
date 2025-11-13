@@ -9,7 +9,7 @@
                 font-size: 14px;
                 font-weight: bold;
                 box-sizing: border-box;
-                background-color: #ebebeb;
+                background-color: #f6f6f6;
                 width: 100%;
                 height: 100%;
                 overflow-y: auto;
