@@ -7,6 +7,7 @@
                 padding: 12px;
                 font-family: Arial, sans-serif;
                 font-size: 14px;
+                font-weight: bold;
                 box-sizing: border-box;
                 background-color: #fafafa;
                 width: 100%;
