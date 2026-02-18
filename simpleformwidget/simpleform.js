@@ -9,11 +9,9 @@ class SimpleFormWidget extends HTMLElement {
     div.id = "content";
     this.shadowRoot.appendChild(div);
 
-    // Load SAPUI5 if not already loaded
     if (!window.sap) {
       const script = document.createElement("script");
       script.src = "https://ui5.sap.com/resources/sap-ui-core.js";
-      script.id = "sap-ui-bootstrap";
       script.setAttribute("data-sap-ui-libs", "sap.m,sap.ui.layout");
       script.setAttribute("data-sap-ui-theme", "sap_fiori_3");
       script.setAttribute("data-sap-ui-async", "true");
@@ -24,9 +22,10 @@ class SimpleFormWidget extends HTMLElement {
     }
   }
 
-  _initUI5(div) {
+  async _initUI5(div) {
+    const viewXml = await fetch("https://sokolat.github.io/customwidgets/Page.view.xml").then(r => r.text());
     sap.ui.getCore().attachInit(() => {
-      sap.ui.xmlview({ viewName: "Page" }).placeAt(div);
+      sap.ui.xmlview({ viewContent: viewXml }).placeAt(div);
     });
   }
 }
