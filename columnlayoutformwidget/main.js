@@ -50,33 +50,31 @@
           ],
           function (SimpleForm, ColumnLayout, Input, Label, Page, App) {
             const form = new SimpleForm({
-              editable: true,
-              layout: new ColumnLayout({
+                editable: true,
+
+                // ✅ layout ENUM (not object)
+                layout: "ColumnLayout",
+
+                // ✅ column configuration
                 columnsM: 2,
                 columnsL: 3,
                 columnsXL: 4,
-              }),
-              content: [
-                new Label({ text: "Client Name" }),
-                new Input(),
 
-                new Label({ text: "Delivery Region" }),
-                new Input(),
+                content: [
 
-                new Label({ text: "Account Executive" }),
-                new Input(),
+                    new Label({ text: "Client Name" }),
+                    new Input(),
 
-                new Label({ text: "Vice President" }),
-                new Input(),
+                    new Label({ text: "Delivery Region" }),
+                    new Input(),
 
-                new Label({ text: "Customer Time Zone" }),
-                new Input(),
+                    new Label({ text: "Account Executive" }),
+                    new Input(),
 
-                new Label({ text: "Churn Risk" }),
-                new Input(),
-              ],
+                    new Label({ text: "Vice President" }),
+                    new Input()
+                ]
             });
-
 
             const app = new App({
               pages: [
