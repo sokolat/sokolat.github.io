@@ -1,0 +1,23 @@
+{
+	"id": "com.sap.sidya.columnlayoutform",
+	"version": "1.0.0",
+	"name": "Column Layout Form",
+	"description": "SAPUI5 SimpleForm using ColumnLayout",
+	"newInstancePrefix": "ColumnLayoutForm",
+	"icon": "",
+	"vendor": "Sidya",
+	"license": "",
+	"webcomponents": [
+		{
+			"kind": "main",
+			"tag": "com-sap-sidya-columnlayoutform-main",
+			"url": "https://your-host-path/columnlayoutform.js",
+			"integrity": "",
+			"ignoreIntegrity": true
+		}
+	],
+	"properties": {},
+	"methods": {},
+	"events": {}
+}
+
