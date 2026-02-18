@@ -52,10 +52,8 @@
             const form = new SimpleForm({
                 editable: true,
 
-                // ✅ layout ENUM (not object)
                 layout: "ColumnLayout",
 
-                // ✅ column configuration
                 columnsM: 2,
                 columnsL: 3,
                 columnsXL: 4,
