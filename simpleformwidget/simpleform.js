@@ -23,7 +23,7 @@ class SimpleFormWidget extends HTMLElement {
   }
 
   async _initUI5(div) {
-    const viewXml = await fetch("https://sokolat.github.io/customwidgets/Page.view.xml").then(r => r.text());
+    const viewXml = await fetch("https://sokolat.github.io/simpleformwidget/Page.view.xml").then(r => r.text());
     sap.ui.getCore().attachInit(() => {
       sap.ui.xmlview({ viewContent: viewXml }).placeAt(div);
     });
