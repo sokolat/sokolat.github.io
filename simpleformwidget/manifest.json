@@ -1,0 +1,19 @@
+{
+  "id": "com.sap.sidya.simpleform",
+  "version": "1.0.0",
+  "name": "SAPUI5 Simple Form",
+  "description": "A simple form widget using SAPUI5",
+  "newInstancePrefix": "SimpleFormWidget",
+  "vendor": "Sidya",
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "com-sap-sidya-simpleform",
+      "url": "https://sokolat.github.io/customwidgets/simpleform.js",
+      "ignoreIntegrity": true
+    }
+  ],
+  "properties": {},
+  "methods": {},
+  "events": {}
+}
