@@ -77,6 +77,7 @@
               ],
             });
 
+
             const app = new App({
               pages: [
                 new Page({
