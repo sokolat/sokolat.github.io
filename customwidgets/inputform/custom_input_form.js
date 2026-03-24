@@ -39,11 +39,9 @@ class SyntaxFioriForm extends HTMLElement {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
       }
-      /* Force form field cells to full width */
       .sapUiFormResGridEl > td:last-child {
         width: 100% !important;
       }
-      /* HBox full width with flex */
       .sapMHBox {
         display: flex !important;
         width: 100% !important;
@@ -51,13 +49,11 @@ class SyntaxFioriForm extends HTMLElement {
         box-sizing: border-box !important;
         overflow: hidden !important;
       }
-      /* Icon fixed width with right margin */
       .sapMHBox > .sapUiIcon {
         flex-shrink: 0 !important;
         margin-right: 8px !important;
         width: 16px !important;
       }
-      /* Input/Select/DatePicker take remaining space */
       .sapMHBox > .sapMInput,
       .sapMHBox > .sapMSelect,
       .sapMHBox > .sapMDatePicker {
@@ -110,6 +106,61 @@ class SyntaxFioriForm extends HTMLElement {
           items: [icon, control]
         });
 
+        // After form renders, attach tooltip-on-truncation logic to all inputs
+        const attachTruncationTooltips = () => {
+          // Handle Input fields
+          document.querySelectorAll(".sapMInputBaseInner").forEach(inputEl => {
+            inputEl.removeEventListener("mouseenter", inputEl._tooltipHandler);
+            inputEl._tooltipHandler = function () {
+              if (this.scrollWidth > this.clientWidth) {
+                this.title = this.value;
+              } else {
+                this.title = "";
+              }
+            };
+            inputEl.addEventListener("mouseenter", inputEl._tooltipHandler);
+          });
+
+          // Handle Select fields
+          document.querySelectorAll(".sapMSelectListItemBase").forEach(selectEl => {
+            selectEl.removeEventListener("mouseenter", selectEl._tooltipHandler);
+            selectEl._tooltipHandler = function () {
+              if (this.scrollWidth > this.clientWidth) {
+                this.title = this.textContent.trim();
+              } else {
+                this.title = "";
+              }
+            };
+            selectEl.addEventListener("mouseenter", selectEl._tooltipHandler);
+          });
+
+          // Handle Select button text (collapsed state)
+          document.querySelectorAll(".sapMSelectListItem").forEach(el => {
+            el.removeEventListener("mouseenter", el._tooltipHandler);
+            el._tooltipHandler = function () {
+              if (this.scrollWidth > this.clientWidth) {
+                this.title = this.textContent.trim();
+              } else {
+                this.title = "";
+              }
+            };
+            el.addEventListener("mouseenter", el._tooltipHandler);
+          });
+
+          // Handle collapsed Select display text
+          document.querySelectorAll(".sapMSltLabel").forEach(el => {
+            el.removeEventListener("mouseenter", el._tooltipHandler);
+            el._tooltipHandler = function () {
+              if (this.scrollWidth > this.clientWidth) {
+                this.title = this.textContent.trim();
+              } else {
+                this.title = "";
+              }
+            };
+            el.addEventListener("mouseenter", el._tooltipHandler);
+          });
+        };
+
         const mkSelect = (labelText, items, selectedKey) => mkHBox(
           mkIcon(labelText),
           new Select({
@@ -119,25 +170,32 @@ class SyntaxFioriForm extends HTMLElement {
           })
         );
 
-        const mkInput = (labelText, value) => mkHBox(
-          mkIcon(labelText),
-          new Input({
+        const mkInput = (labelText, value) => {
+          const input = new Input({
             value: value || "",
             width: "100%",
             editable: !autoFields.includes(labelText)
-          })
-        );
+          });
+          // Set tooltip to full value always — browser shows it only when needed
+          if (value) input.setTooltip(value);
+          // Update tooltip when value changes
+          input.attachChange((e) => {
+            input.setTooltip(e.getParameter("value"));
+          });
+          return mkHBox(mkIcon(labelText), input);
+        };
 
-        const mkDate = (labelText, value, fmt) => mkHBox(
-          mkIcon(labelText),
-          new DatePicker({
+        const mkDate = (labelText, value, fmt) => {
+          const dp = new DatePicker({
             value: value || "",
             valueFormat: "yyyy-MM-dd",
             displayFormat: fmt || "yyyy-MM-dd",
             width: "100%",
             editable: !autoFields.includes(labelText)
-          })
-        );
+          });
+          if (value) dp.setTooltip(value);
+          return mkHBox(mkIcon(labelText), dp);
+        };
 
         const oCol1 = new FormContainer({
           title: "General",
@@ -227,6 +285,14 @@ class SyntaxFioriForm extends HTMLElement {
 
         oForm.placeAt(container.id);
         oToolbar.placeAt(container.id);
+
+        // After UI5 renders the DOM, attach truncation tooltip listeners
+        sap.ui.getCore().attachAfterRendering(() => {
+          setTimeout(attachTruncationTooltips, 300);
+        });
+
+        // Also run once after initial render
+        setTimeout(attachTruncationTooltips, 500);
       });
     });
   }
