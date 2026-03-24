@@ -39,24 +39,22 @@ class SyntaxFioriForm extends HTMLElement {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
       }
-      .sapMInput, .sapMSelect, .sapMInputBase, .sapUiDPInn, .sapMDatePicker {
+      /* Fix HBox stretching inside form cells */
+      .sapMHBox {
         width: 100% !important;
-        max-width: 100% !important;
-        min-width: unset !important;
         box-sizing: border-box !important;
       }
-      .fieldWrapper {
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-        width: 100% !important;
-      }
-      .fieldWrapper > .sapMInput,
-      .fieldWrapper > .sapMSelect,
-      .fieldWrapper > .sapMDatePicker {
+      .sapMHBox .sapMInput,
+      .sapMHBox .sapMSelect,
+      .sapMHBox .sapMDatePicker {
         flex: 1 !important;
-        width: auto !important;
+        width: 0 !important;
         min-width: 0 !important;
+      }
+      /* Icon spacing */
+      .sapMHBox .sapUiIcon {
+        margin-right: 8px !important;
+        flex-shrink: 0 !important;
       }
     `;
     this.appendChild(style);
@@ -91,13 +89,14 @@ class SyntaxFioriForm extends HTMLElement {
           const isAuto = autoFields.includes(labelText);
           return new Icon({
             src: isAuto ? "sap-icon://locked" : "sap-icon://edit",
-            color: isAuto ? "#8c8c8c" : "#0070f2",
+            color: "#0070f2",
             size: "14px",
             tooltip: isAuto ? "Mapped from source system" : "Manually editable"
           });
         };
 
         const mkSelect = (labelText, items, selectedKey) => new HBox({
+          width: "100%",
           alignItems: "Center",
           items: [
             mkIcon(labelText),
@@ -110,6 +109,7 @@ class SyntaxFioriForm extends HTMLElement {
         });
 
         const mkInput = (labelText, value) => new HBox({
+          width: "100%",
           alignItems: "Center",
           items: [
             mkIcon(labelText),
@@ -122,6 +122,7 @@ class SyntaxFioriForm extends HTMLElement {
         });
 
         const mkDate = (labelText, value, fmt) => new HBox({
+          width: "100%",
           alignItems: "Center",
           items: [
             mkIcon(labelText),
