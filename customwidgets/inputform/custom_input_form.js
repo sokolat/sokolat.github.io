@@ -34,18 +34,17 @@ class SyntaxFioriForm extends HTMLElement {
         width: 100% !important;
         display: block !important;
       }
-      /* Fix label wrapping */
       .sapUiFormElementLbl {
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        min-width: 160px !important;
       }
-      /* Input width */
-      .sapMInput, .sapMSelect, .sapMInputBase, .sapUiDPInn {
-        width: 200px !important;
-        max-width: 200px !important;
-        min-width: 200px !important;
+      /* Use 90% width so inputs fit inside their column */
+      .sapMInput, .sapMSelect, .sapMInputBase, .sapUiDPInn, .sapMDatePicker {
+        width: 90% !important;
+        max-width: 90% !important;
+        min-width: unset !important;
+        box-sizing: border-box !important;
       }
     `;
     this.appendChild(style);
@@ -67,21 +66,21 @@ class SyntaxFioriForm extends HTMLElement {
       ], (Form, FormContainer, FormElement, ResponsiveGridLayout, Label, Input, Select, DatePicker, Button, Toolbar, ToolbarSpacer, Item) => {
 
         const mkSelect = (items, selectedKey) => new Select({
-          width: "200px",
+          width: "90%",
           selectedKey,
           items: items.map(([key, text]) => new Item({ key, text }))
         });
 
         const mkInput = (value) => new Input({
           value: value || "",
-          width: "200px"
+          width: "90%"
         });
 
         const mkDate = (value, fmt) => new DatePicker({
           value: value || "",
           valueFormat: "yyyy-MM-dd",
           displayFormat: fmt || "yyyy-MM-dd",
-          width: "200px"
+          width: "90%"
         });
 
         const oCol1 = new FormContainer({
@@ -133,7 +132,7 @@ class SyntaxFioriForm extends HTMLElement {
             new FormElement({ label: new Label({ text: "SOW Start Date" }), fields: [mkDate("2025-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW End Date" }), fields: [mkDate("2030-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW Nb Of Months" }), fields: [mkInput("60")] }),
-            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26", width: "200px" })] }),
+            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26", width: "90%" })] }),
             new FormElement({ label: new Label({ text: "Syntax Customer Since" }), fields: [mkDate("1969-12-31", "MMM dd, yyyy")] }),
             new FormElement({ label: new Label({ text: "Project Stage" }), fields: [mkInput("In Execution")] }),
             new FormElement({ label: new Label({ text: "Project Row Source" }), fields: [mkInput("S4")] }),
