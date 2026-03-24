@@ -25,7 +25,7 @@ class SyntaxFioriForm extends HTMLElement {
     style.textContent = `
       .sapUiFormResGridCont {
         display: inline-block !important;
-        width: 42% !important;
+        width: 72% !important;
         vertical-align: top !important;
         box-sizing: border-box !important;
         padding: 0 6px !important;
