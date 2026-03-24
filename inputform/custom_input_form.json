@@ -1,0 +1,19 @@
+{
+  "id": "com.syntax.fioriform",
+  "version": "1.0.0",
+  "name": "Fiori Input Form",
+  "newInstancePrefix": "FioriForm",
+  "properties": {
+    "projectId": { "type": "string", "default": "" },
+    "customerId": { "type": "string", "default": "" }
+  },
+  "methods": {},
+  "events": {},
+  "webcomponents": [{
+    "kind": "main",
+    "tag": "com-syntax-fioriform",
+    "url": "widget.js",
+    "integrity": "",
+    "ignoreIntegrity": true
+  }]
+}
