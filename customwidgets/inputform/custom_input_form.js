@@ -39,10 +39,9 @@ class SyntaxFioriForm extends HTMLElement {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
       }
-      /* Use 90% width so inputs fit inside their column */
       .sapMInput, .sapMSelect, .sapMInputBase, .sapUiDPInn, .sapMDatePicker {
-        width: 90% !important;
-        max-width: 90% !important;
+        width: 100% !important;
+        max-width: 100% !important;
         min-width: unset !important;
         box-sizing: border-box !important;
       }
@@ -66,21 +65,21 @@ class SyntaxFioriForm extends HTMLElement {
       ], (Form, FormContainer, FormElement, ResponsiveGridLayout, Label, Input, Select, DatePicker, Button, Toolbar, ToolbarSpacer, Item) => {
 
         const mkSelect = (items, selectedKey) => new Select({
-          width: "90%",
+          width: "100%",
           selectedKey,
           items: items.map(([key, text]) => new Item({ key, text }))
         });
 
         const mkInput = (value) => new Input({
           value: value || "",
-          width: "90%"
+          width: "100%"
         });
 
         const mkDate = (value, fmt) => new DatePicker({
           value: value || "",
           valueFormat: "yyyy-MM-dd",
           displayFormat: fmt || "yyyy-MM-dd",
-          width: "90%"
+          width: "100%"
         });
 
         const oCol1 = new FormContainer({
@@ -132,7 +131,7 @@ class SyntaxFioriForm extends HTMLElement {
             new FormElement({ label: new Label({ text: "SOW Start Date" }), fields: [mkDate("2025-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW End Date" }), fields: [mkDate("2030-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW Nb Of Months" }), fields: [mkInput("60")] }),
-            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26", width: "90%" })] }),
+            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26", width: "100%" })] }),
             new FormElement({ label: new Label({ text: "Syntax Customer Since" }), fields: [mkDate("1969-12-31", "MMM dd, yyyy")] }),
             new FormElement({ label: new Label({ text: "Project Stage" }), fields: [mkInput("In Execution")] }),
             new FormElement({ label: new Label({ text: "Project Row Source" }), fields: [mkInput("S4")] }),
@@ -157,8 +156,15 @@ class SyntaxFioriForm extends HTMLElement {
         const oToolbar = new Toolbar({
           content: [
             new ToolbarSpacer(),
-            new Button({ text: "Save", type: "Emphasized", press: () => console.log("Save") }),
-            new Button({ text: "Cancel", press: () => console.log("Cancel") })
+            new Button({
+              text: "Save",
+              type: "Emphasized",
+              press: () => console.log("Save clicked")
+            }),
+            new Button({
+              text: "Cancel",
+              press: () => console.log("Cancel clicked")
+            })
           ]
         });
 
