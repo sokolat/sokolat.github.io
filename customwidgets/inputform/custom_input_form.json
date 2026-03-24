@@ -12,7 +12,7 @@
   "webcomponents": [{
     "kind": "main",
     "tag": "com-syntax-fioriform",
-    "url": "widget.js",
+    "url": "https://sokolat.github.io/customwidgets/inputform/custom_input_form.js",
     "integrity": "",
     "ignoreIntegrity": true
   }]
