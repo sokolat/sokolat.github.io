@@ -5,6 +5,11 @@ class SyntaxFioriForm extends HTMLElement {
     this.appendChild(container);
 
     sap.ui.getCore().loadLibrary("sap.ui.layout", { async: true }).then(() => {
+
+      // Auto-detect SAC's current theme and apply it
+      const currentTheme = sap.ui.getCore().getConfiguration().getTheme();
+      sap.ui.getCore().applyTheme(currentTheme);
+
       sap.ui.require([
         "sap/ui/layout/form/SimpleForm",
         "sap/ui/layout/form/ResponsiveGridLayout",
