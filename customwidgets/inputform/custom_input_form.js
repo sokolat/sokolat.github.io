@@ -1,13 +1,11 @@
 class SyntaxFioriForm extends HTMLElement {
   connectedCallback() {
-    const container = document.createElement("div");
-    container.id = "fiori-form-" + Math.random().toString(36).substr(2, 9);
-    
-    // Make widget scrollable
     this.style.display = "block";
     this.style.height = "100%";
     this.style.overflowY = "auto";
-    
+
+    const container = document.createElement("div");
+    container.id = "fiori-form-" + Math.random().toString(36).substr(2, 9);
     this.appendChild(container);
 
     const cssFiles = [
@@ -23,6 +21,39 @@ class SyntaxFioriForm extends HTMLElement {
       this.appendChild(link);
     });
 
+    // Force 3-column side-by-side layout + reduce input width
+    const style = document.createElement("style");
+    style.textContent = `
+      .sapUiFormResGridCont {
+        display: inline-block !important;
+        width: 32% !important;
+        vertical-align: top !important;
+        box-sizing: border-box !important;
+        padding: 0 8px !important;
+      }
+      .sapMInput {
+        width: 160px !important;
+        max-width: 160px !important;
+      }
+      .sapMSelect {
+        width: 160px !important;
+        max-width: 160px !important;
+      }
+      .sapMInputBase {
+        width: 160px !important;
+        max-width: 160px !important;
+      }
+      .sapUiDPInn {
+        width: 160px !important;
+        max-width: 160px !important;
+      }
+      .sapUiFormResGridMainCont {
+        width: 100% !important;
+        display: block !important;
+      }
+    `;
+    this.appendChild(style);
+
     sap.ui.getCore().loadLibrary("sap.ui.layout", { async: true }).then(() => {
       sap.ui.require([
         "sap/ui/layout/form/Form",
@@ -36,20 +67,25 @@ class SyntaxFioriForm extends HTMLElement {
         "sap/m/Button",
         "sap/m/Toolbar",
         "sap/m/ToolbarSpacer",
-        "sap/m/Title",
         "sap/ui/core/Item"
-      ], (Form, FormContainer, FormElement, ResponsiveGridLayout, Label, Input, Select, DatePicker, Button, Toolbar, ToolbarSpacer, Title, Item) => {
+      ], (Form, FormContainer, FormElement, ResponsiveGridLayout, Label, Input, Select, DatePicker, Button, Toolbar, ToolbarSpacer, Item) => {
 
         const mkSelect = (items, selectedKey) => new Select({
+          width: "160px",
           selectedKey,
           items: items.map(([key, text]) => new Item({ key, text }))
         });
 
-        const mkInput = (value) => new Input({ value: value || "" });
-        const mkDate = (value, fmt) => new DatePicker({ 
-          value: value || "", 
-          valueFormat: "yyyy-MM-dd", 
-          displayFormat: fmt || "yyyy-MM-dd" 
+        const mkInput = (value) => new Input({ 
+          value: value || "",
+          width: "160px"
+        });
+
+        const mkDate = (value, fmt) => new DatePicker({
+          value: value || "",
+          valueFormat: "yyyy-MM-dd",
+          displayFormat: fmt || "yyyy-MM-dd",
+          width: "160px"
         });
 
         // --- Column 1: General ---
@@ -104,7 +140,7 @@ class SyntaxFioriForm extends HTMLElement {
             new FormElement({ label: new Label({ text: "SOW Start Date" }), fields: [mkDate("2025-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW End Date" }), fields: [mkDate("2030-01-01")] }),
             new FormElement({ label: new Label({ text: "SOW Nb Of Months" }), fields: [mkInput("60")] }),
-            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26" })] }),
+            new FormElement({ label: new Label({ text: "SOW Ren. Signed Date" }), fields: [new DatePicker({ placeholder: "e.g. 12/31/26", width: "160px" })] }),
             new FormElement({ label: new Label({ text: "Syntax Customer Since" }), fields: [mkDate("1969-12-31", "MMM dd, yyyy")] }),
             new FormElement({ label: new Label({ text: "Project Stage" }), fields: [mkInput("In Execution")] }),
             new FormElement({ label: new Label({ text: "Project Row Source" }), fields: [mkInput("S4")] }),
@@ -112,12 +148,11 @@ class SyntaxFioriForm extends HTMLElement {
           ]
         });
 
-        // --- Assemble Form ---
         const oForm = new Form({
           editable: true,
           layout: new ResponsiveGridLayout({
-            labelSpanL: 5,
-            labelSpanM: 5,
+            labelSpanL: 6,
+            labelSpanM: 6,
             emptySpanL: 0,
             emptySpanM: 0,
             columnsL: 3,
@@ -126,7 +161,6 @@ class SyntaxFioriForm extends HTMLElement {
           formContainers: [oCol1, oCol2, oCol3]
         });
 
-        // --- Save / Cancel Toolbar ---
         const oToolbar = new Toolbar({
           content: [
             new ToolbarSpacer(),
