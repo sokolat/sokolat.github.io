@@ -1,8 +1,8 @@
 class SyntaxFioriForm extends HTMLElement {
   connectedCallback() {
-    // Prevent double initialization
     if (this._initialized) return;
     this._initialized = true;
+    this._pendingData = null; // queue for data arriving before render
 
     this.style.display = "block";
     this.style.height = "100%";
@@ -29,7 +29,7 @@ class SyntaxFioriForm extends HTMLElement {
     style.textContent = `
       .sapUiFormResGridCont {
         display: inline-block !important;
-        width: 62% !important;
+        width: 42% !important;
         vertical-align: top !important;
         box-sizing: border-box !important;
         padding: 0 6px !important;
@@ -138,6 +138,14 @@ class SyntaxFioriForm extends HTMLElement {
             ctrl.setValue(value);
             ctrl.setTooltip(value);
           }
+        };
+
+        const applyData = (formData) => {
+          var keys = Object.keys(formData);
+          keys.forEach((key) => {
+            setControlValue(key, formData[key]);
+          });
+          setTimeout(attachTruncationTooltips, 300);
         };
 
         const mkSelectRef = (key, labelText, items, selectedKey) => {
@@ -265,13 +273,20 @@ class SyntaxFioriForm extends HTMLElement {
         oToolbar.placeAt(container.id);
         setTimeout(attachTruncationTooltips, 500);
 
-        // Single bulk setter using Selection object from SAC
+        // If setDataSource was called before render completed, apply now
+        if (this._pendingData) {
+          applyData(this._pendingData);
+          this._pendingData = null;
+        }
+
+        // Expose setDataSource — handles both early and late calls
         this.setDataSource = (formData) => {
-          var keys = Object.keys(formData);
-          keys.forEach((key) => {
-            setControlValue(key, formData[key]);
-          });
-          setTimeout(attachTruncationTooltips, 300);
+          if (Object.keys(controls).length === 0) {
+            // Controls not ready yet — queue the data
+            this._pendingData = formData;
+          } else {
+            applyData(formData);
+          }
         };
 
       });
