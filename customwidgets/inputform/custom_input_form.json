@@ -16,8 +16,7 @@
           "type": "Selection",
           "description": "All form field values as a single selection object"
         }
-      ],
-      "body": "this.formData = formData;"
+      ]
     }
   },
   "events": {},
