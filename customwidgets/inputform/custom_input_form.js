@@ -92,6 +92,24 @@ class SyntaxFioriForm extends HTMLElement {
           "Regional Lead", "SDM Prime", "VDI"
         ];
 
+        const attachTruncationTooltips = () => {
+          document.querySelectorAll(".sapMInputBaseInner").forEach(inputEl => {
+            inputEl.removeEventListener("mouseenter", inputEl._tooltipHandler);
+            inputEl._tooltipHandler = function () {
+              this.title = this.scrollWidth > this.clientWidth ? this.value : "";
+            };
+            inputEl.addEventListener("mouseenter", inputEl._tooltipHandler);
+          });
+
+          document.querySelectorAll(".sapMSltLabel").forEach(el => {
+            el.removeEventListener("mouseenter", el._tooltipHandler);
+            el._tooltipHandler = function () {
+              this.title = this.scrollWidth > this.clientWidth ? this.textContent.trim() : "";
+            };
+            el.addEventListener("mouseenter", el._tooltipHandler);
+          });
+        };
+
         const mkIcon = (labelText) => new Icon({
           src: autoFields.includes(labelText) ? "sap-icon://locked" : "sap-icon://edit",
           color: "#0070f2",
@@ -105,61 +123,6 @@ class SyntaxFioriForm extends HTMLElement {
           alignItems: "Center",
           items: [icon, control]
         });
-
-        // After form renders, attach tooltip-on-truncation logic to all inputs
-        const attachTruncationTooltips = () => {
-          // Handle Input fields
-          document.querySelectorAll(".sapMInputBaseInner").forEach(inputEl => {
-            inputEl.removeEventListener("mouseenter", inputEl._tooltipHandler);
-            inputEl._tooltipHandler = function () {
-              if (this.scrollWidth > this.clientWidth) {
-                this.title = this.value;
-              } else {
-                this.title = "";
-              }
-            };
-            inputEl.addEventListener("mouseenter", inputEl._tooltipHandler);
-          });
-
-          // Handle Select fields
-          document.querySelectorAll(".sapMSelectListItemBase").forEach(selectEl => {
-            selectEl.removeEventListener("mouseenter", selectEl._tooltipHandler);
-            selectEl._tooltipHandler = function () {
-              if (this.scrollWidth > this.clientWidth) {
-                this.title = this.textContent.trim();
-              } else {
-                this.title = "";
-              }
-            };
-            selectEl.addEventListener("mouseenter", selectEl._tooltipHandler);
-          });
-
-          // Handle Select button text (collapsed state)
-          document.querySelectorAll(".sapMSelectListItem").forEach(el => {
-            el.removeEventListener("mouseenter", el._tooltipHandler);
-            el._tooltipHandler = function () {
-              if (this.scrollWidth > this.clientWidth) {
-                this.title = this.textContent.trim();
-              } else {
-                this.title = "";
-              }
-            };
-            el.addEventListener("mouseenter", el._tooltipHandler);
-          });
-
-          // Handle collapsed Select display text
-          document.querySelectorAll(".sapMSltLabel").forEach(el => {
-            el.removeEventListener("mouseenter", el._tooltipHandler);
-            el._tooltipHandler = function () {
-              if (this.scrollWidth > this.clientWidth) {
-                this.title = this.textContent.trim();
-              } else {
-                this.title = "";
-              }
-            };
-            el.addEventListener("mouseenter", el._tooltipHandler);
-          });
-        };
 
         const mkSelect = (labelText, items, selectedKey) => mkHBox(
           mkIcon(labelText),
@@ -176,12 +139,8 @@ class SyntaxFioriForm extends HTMLElement {
             width: "100%",
             editable: !autoFields.includes(labelText)
           });
-          // Set tooltip to full value always — browser shows it only when needed
           if (value) input.setTooltip(value);
-          // Update tooltip when value changes
-          input.attachChange((e) => {
-            input.setTooltip(e.getParameter("value"));
-          });
+          input.attachChange((e) => input.setTooltip(e.getParameter("value")));
           return mkHBox(mkIcon(labelText), input);
         };
 
@@ -286,12 +245,6 @@ class SyntaxFioriForm extends HTMLElement {
         oForm.placeAt(container.id);
         oToolbar.placeAt(container.id);
 
-        // After UI5 renders the DOM, attach truncation tooltip listeners
-        sap.ui.getCore().attachAfterRendering(() => {
-          setTimeout(attachTruncationTooltips, 300);
-        });
-
-        // Also run once after initial render
         setTimeout(attachTruncationTooltips, 500);
       });
     });
