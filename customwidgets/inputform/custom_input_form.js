@@ -123,16 +123,30 @@ class SyntaxFioriForm extends HTMLElement {
           items: [icon, control]
         });
 
-        const mkSelect = (labelText, items, selectedKey) => mkHBox(
-          mkIcon(labelText),
-          new Select({
+        const controls = {};
+
+        const setControlValue = (key, value) => {
+          if (!controls[key] || value === undefined || value === null) return;
+          const ctrl = controls[key];
+          if (typeof ctrl.setSelectedKey === "function") {
+            ctrl.setSelectedKey(value);
+          } else if (typeof ctrl.setValue === "function") {
+            ctrl.setValue(value);
+            ctrl.setTooltip(value);
+          }
+        };
+
+        const mkSelectRef = (key, labelText, items, selectedKey) => {
+          const select = new Select({
             width: "100%",
             selectedKey,
-            items: items.map(([key, text]) => new Item({ key, text }))
-          })
-        );
+            items: items.map(([k, text]) => new Item({ key: k, text }))
+          });
+          controls[key] = select;
+          return mkHBox(mkIcon(labelText), select);
+        };
 
-        const mkInput = (labelText, value) => {
+        const mkInputRef = (key, labelText, value) => {
           const input = new Input({
             value: value || "",
             width: "100%",
@@ -140,10 +154,11 @@ class SyntaxFioriForm extends HTMLElement {
           });
           if (value) input.setTooltip(value);
           input.attachChange((e) => input.setTooltip(e.getParameter("value")));
+          controls[key] = input;
           return mkHBox(mkIcon(labelText), input);
         };
 
-        const mkDate = (labelText, value, fmt) => {
+        const mkDateRef = (key, labelText, value, fmt) => {
           const dp = new DatePicker({
             value: value || "",
             valueFormat: "yyyy-MM-dd",
@@ -152,46 +167,26 @@ class SyntaxFioriForm extends HTMLElement {
             editable: !autoFields.includes(labelText)
           });
           if (value) dp.setTooltip(value);
+          controls[key] = dp;
           return mkHBox(mkIcon(labelText), dp);
-        };
-
-        // --- Store control references for setData ---
-        const controls = {};
-
-        const mkSelectRef = (key, labelText, items, selectedKey) => {
-          const hbox = mkSelect(labelText, items, selectedKey);
-          controls[key] = hbox.getItems()[1]; // Select is second item after icon
-          return hbox;
-        };
-
-        const mkInputRef = (key, labelText, value) => {
-          const hbox = mkInput(labelText, value);
-          controls[key] = hbox.getItems()[1]; // Input is second item after icon
-          return hbox;
-        };
-
-        const mkDateRef = (key, labelText, value, fmt) => {
-          const hbox = mkDate(labelText, value, fmt);
-          controls[key] = hbox.getItems()[1]; // DatePicker is second item after icon
-          return hbox;
         };
 
         const oCol1 = new FormContainer({
           title: "General",
           formElements: [
-            new FormElement({ label: new Label({ text: "Customer Delivery Region" }), fields: [mkSelectRef("customerDeliveryRegion", "Customer Delivery Region", [["canada","Canada"],["usa","USA"],["emea","EMEA"]], "canada")] }),
-            new FormElement({ label: new Label({ text: "Churn Risk" }), fields: [mkSelectRef("churnRisk", "Churn Risk", [["high","High"],["medium","Medium"],["low","Low"]], "high")] }),
+            new FormElement({ label: new Label({ text: "Customer Delivery Region" }), fields: [mkSelectRef("customerDeliveryRegion", "Customer Delivery Region", [["canada","Canada"],["usa","USA"],["emea","EMEA"]], "")] }),
+            new FormElement({ label: new Label({ text: "Churn Risk" }), fields: [mkSelectRef("churnRisk", "Churn Risk", [["high","High"],["medium","Medium"],["low","Low"]], "")] }),
             new FormElement({ label: new Label({ text: "Customer Time Zone" }), fields: [mkInputRef("customerTimeZone", "Customer Time Zone", "")] }),
             new FormElement({ label: new Label({ text: "Churn Risk Reason" }), fields: [mkInputRef("churnRiskReason", "Churn Risk Reason", "")] }),
-            new FormElement({ label: new Label({ text: "SAP System Level 1" }), fields: [mkSelectRef("sapSystemLevel1", "SAP System Level 1", [["r3","R3 ECC On Premise"],["s4","S4 HANA"]], "r3")] }),
+            new FormElement({ label: new Label({ text: "SAP System Level 1" }), fields: [mkSelectRef("sapSystemLevel1", "SAP System Level 1", [["r3","R3 ECC On Premise"],["s4","S4 HANA"]], "")] }),
             new FormElement({ label: new Label({ text: "TMS Contract" }), fields: [mkSelectRef("tmsContract", "TMS Contract", [["",""]], "")] }),
-            new FormElement({ label: new Label({ text: "PCOE" }), fields: [mkSelectRef("pcoe", "PCOE", [["no","No"],["yes","Yes"]], "no")] }),
-            new FormElement({ label: new Label({ text: "Ebonding" }), fields: [mkSelectRef("ebonding", "Ebonding", [["no","No"],["yes","Yes"]], "no")] }),
+            new FormElement({ label: new Label({ text: "PCOE" }), fields: [mkSelectRef("pcoe", "PCOE", [["no","No"],["yes","Yes"]], "")] }),
+            new FormElement({ label: new Label({ text: "Ebonding" }), fields: [mkSelectRef("ebonding", "Ebonding", [["no","No"],["yes","Yes"]], "")] }),
             new FormElement({ label: new Label({ text: "Billing Method Be" }), fields: [mkSelectRef("billingMethod", "Billing Method Be", [["",""]], "")] }),
-            new FormElement({ label: new Label({ text: "Status" }), fields: [mkSelectRef("status", "Status", [["active","Active"],["inactive","Inactive"]], "active")] }),
-            new FormElement({ label: new Label({ text: "Customer Classification" }), fields: [mkSelectRef("customerClassification", "Customer Classification", [["a","A"],["b","B"],["c","C"]], "b")] }),
-            new FormElement({ label: new Label({ text: "Exception Priority 1" }), fields: [mkSelectRef("exceptionPriority1", "Exception Priority 1", [["no","No"],["yes","Yes"]], "no")] }),
-            new FormElement({ label: new Label({ text: "Using Customer ITSM" }), fields: [mkSelectRef("usingCustomerITSM", "Using Customer ITSM", [["no","No"],["yes","Yes"]], "no")] }),
+            new FormElement({ label: new Label({ text: "Status" }), fields: [mkSelectRef("status", "Status", [["active","Active"],["inactive","Inactive"]], "")] }),
+            new FormElement({ label: new Label({ text: "Customer Classification" }), fields: [mkSelectRef("customerClassification", "Customer Classification", [["a","A"],["b","B"],["c","C"]], "")] }),
+            new FormElement({ label: new Label({ text: "Exception Priority 1" }), fields: [mkSelectRef("exceptionPriority1", "Exception Priority 1", [["no","No"],["yes","Yes"]], "")] }),
+            new FormElement({ label: new Label({ text: "Using Customer ITSM" }), fields: [mkSelectRef("usingCustomerITSM", "Using Customer ITSM", [["no","No"],["yes","Yes"]], "")] }),
             new FormElement({ label: new Label({ text: "AI AGENT" }), fields: [mkSelectRef("aiAgent", "AI AGENT", [["",""]], "")] }),
           ]
         });
@@ -264,69 +259,17 @@ class SyntaxFioriForm extends HTMLElement {
 
         oForm.placeAt(container.id);
         oToolbar.placeAt(container.id);
-
         setTimeout(attachTruncationTooltips, 500);
 
-        // --- Expose setData method for SAC scripts ---
-        this.setData = (data) => {
-          const set = (key, value) => {
-            if (!controls[key] || value === undefined || value === null) return;
-            const ctrl = controls[key];
-            if (typeof ctrl.setSelectedKey === "function") {
-              ctrl.setSelectedKey(value);
-            } else if (typeof ctrl.setValue === "function") {
-              ctrl.setValue(value);
-              ctrl.setTooltip(value);
-            }
-          };
-
-          // General
-          set("customerDeliveryRegion", data.customerDeliveryRegion);
-          set("churnRisk",              data.churnRisk);
-          set("customerTimeZone",       data.customerTimeZone);
-          set("churnRiskReason",        data.churnRiskReason);
-          set("sapSystemLevel1",        data.sapSystemLevel1);
-          set("tmsContract",            data.tmsContract);
-          set("pcoe",                   data.pcoe);
-          set("ebonding",               data.ebonding);
-          set("billingMethod",          data.billingMethod);
-          set("status",                 data.status);
-          set("customerClassification", data.customerClassification);
-          set("exceptionPriority1",     data.exceptionPriority1);
-          set("usingCustomerITSM",      data.usingCustomerITSM);
-          set("aiAgent",                data.aiAgent);
-
-          // Customer Details
-          set("industry",              data.industry);
-          set("customer",              data.customer);
-          set("mainCustomerCountry",   data.mainCustomerCountry);
-          set("customerState",         data.customerState);
-          set("customerCity",          data.customerCity);
-          set("sdmCounterpart",        data.sdmCounterpart);
-          set("sdmCounterpartEmail",   data.sdmCounterpartEmail);
-          set("itLeaders",             data.itLeaders);
-          set("itLeadersEmail",        data.itLeadersEmail);
-          set("sowApproverEmail",      data.sowApproverEmail);
-          set("sowApprover",           data.sowApprover);
-          set("accountManager",        data.accountManager);
-          set("sdmSecondary",          data.sdmSecondary);
-          set("vp",                    data.vp);
-
-          // SOW & Project
-          set("vdi",                   data.vdi);
-          set("sdmPrime",              data.sdmPrime);
-          set("regionalLead",          data.regionalLead);
-          set("sowStartDate",          data.sowStartDate);
-          set("sowEndDate",            data.sowEndDate);
-          set("sowNbMonths",           data.sowNbMonths);
-          set("sowRenSignedDate",      data.sowRenSignedDate);
-          set("syntaxCustomerSince",   data.syntaxCustomerSince);
-          set("projectStage",          data.projectStage);
-          set("projectRowSource",      data.projectRowSource);
-          set("customerRowSource",     data.customerRowSource);
-
+        // Single bulk setter using Selection object from SAC
+        this.setDataSource = (formData) => {
+          var keys = Object.keys(formData);
+          keys.forEach((key) => {
+            setControlValue(key, formData[key]);
+          });
           setTimeout(attachTruncationTooltips, 300);
         };
+
       });
     });
   }

@@ -8,15 +8,16 @@
     "customerId": { "type": "string", "default": "" }
   },
   "methods": {
-    "setData": {
-      "description": "Populates all form fields with data from SAC model",
+    "setDataSource": {
+      "description": "Populates all form fields in one bulk call",
       "parameters": [
         {
-          "name": "data",
-          "type": "object",
-          "description": "Object containing all field values"
+          "name": "formData",
+          "type": "Selection",
+          "description": "All form field values as a single selection object"
         }
-      ]
+      ],
+      "body": "this.formData = formData;"
     }
   },
   "events": {},
