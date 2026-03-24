@@ -2,7 +2,40 @@ class SyntaxFioriForm extends HTMLElement {
   connectedCallback() {
     if (this._initialized) return;
     this._initialized = true;
-    this._pendingData = null; // queue for data arriving before render
+    this._pendingData = null;
+    this._controls = {};
+
+    // Define setDataSource IMMEDIATELY on this — before any async code
+    // so SAC can find it right away
+    this.setDataSource = (formData) => {
+      console.log("setDataSource called", formData);
+      if (Object.keys(this._controls).length === 0) {
+        console.log("queuing data");
+        this._pendingData = formData;
+      } else {
+        console.log("applying immediately");
+        this._applyData(formData);
+      }
+    };
+
+    this._applyData = (formData) => {
+      var keys = Object.keys(formData);
+      keys.forEach((key) => {
+        this._setControlValue(key, formData[key]);
+      });
+    };
+
+    this._setControlValue = (key, value) => {
+      console.log("setControlValue", key, value, this._controls[key] ? "found" : "NOT FOUND");
+      if (!this._controls[key] || value === undefined || value === null) return;
+      const ctrl = this._controls[key];
+      if (typeof ctrl.setSelectedKey === "function") {
+        ctrl.setSelectedKey(value);
+      } else if (typeof ctrl.setValue === "function") {
+        ctrl.setValue(value);
+        ctrl.setTooltip(value);
+      }
+    };
 
     this.style.display = "block";
     this.style.height = "100%";
@@ -127,34 +160,13 @@ class SyntaxFioriForm extends HTMLElement {
           items: [icon, control]
         });
 
-        const controls = {};
-
-        const setControlValue = (key, value) => {
-          if (!controls[key] || value === undefined || value === null) return;
-          const ctrl = controls[key];
-          if (typeof ctrl.setSelectedKey === "function") {
-            ctrl.setSelectedKey(value);
-          } else if (typeof ctrl.setValue === "function") {
-            ctrl.setValue(value);
-            ctrl.setTooltip(value);
-          }
-        };
-
-        const applyData = (formData) => {
-          var keys = Object.keys(formData);
-          keys.forEach((key) => {
-            setControlValue(key, formData[key]);
-          });
-          setTimeout(attachTruncationTooltips, 300);
-        };
-
         const mkSelectRef = (key, labelText, items, selectedKey) => {
           const select = new Select({
             width: "100%",
             selectedKey,
             items: items.map(([k, text]) => new Item({ key: k, text }))
           });
-          controls[key] = select;
+          this._controls[key] = select;
           return mkHBox(mkIcon(labelText), select);
         };
 
@@ -166,7 +178,7 @@ class SyntaxFioriForm extends HTMLElement {
           });
           if (value) input.setTooltip(value);
           input.attachChange((e) => input.setTooltip(e.getParameter("value")));
-          controls[key] = input;
+          this._controls[key] = input;
           return mkHBox(mkIcon(labelText), input);
         };
 
@@ -179,7 +191,7 @@ class SyntaxFioriForm extends HTMLElement {
             editable: !autoFields.includes(labelText)
           });
           if (value) dp.setTooltip(value);
-          controls[key] = dp;
+          this._controls[key] = dp;
           return mkHBox(mkIcon(labelText), dp);
         };
 
@@ -273,21 +285,12 @@ class SyntaxFioriForm extends HTMLElement {
         oToolbar.placeAt(container.id);
         setTimeout(attachTruncationTooltips, 500);
 
-        // If setDataSource was called before render completed, apply now
+        // Apply any pending data that arrived before controls were ready
         if (this._pendingData) {
-          applyData(this._pendingData);
+          console.log("applying pending data after render");
+          this._applyData(this._pendingData);
           this._pendingData = null;
         }
-
-        // Expose setDataSource — handles both early and late calls
-        this.setDataSource = (formData) => {
-          if (Object.keys(controls).length === 0) {
-            // Controls not ready yet — queue the data
-            this._pendingData = formData;
-          } else {
-            applyData(formData);
-          }
-        };
 
       });
     });
