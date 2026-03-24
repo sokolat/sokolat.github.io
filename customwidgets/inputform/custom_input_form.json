@@ -1,5 +1,5 @@
 {
-  "id": "com.sap.sidya.fioriform",
+  "id": "com.sidya.fioriform",
   "version": "1.0.0",
   "name": "Fiori Input Form",
   "newInstancePrefix": "FioriForm",
@@ -11,7 +11,7 @@
   "events": {},
   "webcomponents": [{
     "kind": "main",
-    "tag": "com-sap-sidya-fioriform",
+    "tag": "com-sidya-fioriform",
     "url": "https://sokolat.github.io/customwidgets/inputform/custom_input_form.js",
     "integrity": "",
     "ignoreIntegrity": true

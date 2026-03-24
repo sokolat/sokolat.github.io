@@ -32,4 +32,4 @@ class SyntaxFioriForm extends HTMLElement {
   }
 }
 
-customElements.define("com-sap-sidya-fioriform", SyntaxFioriForm);
+customElements.define("com-sidya-fioriform", SyntaxFioriForm);
