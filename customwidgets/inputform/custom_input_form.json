@@ -7,7 +7,18 @@
     "projectId": { "type": "string", "default": "" },
     "customerId": { "type": "string", "default": "" }
   },
-  "methods": {},
+  "methods": {
+    "setData": {
+      "description": "Populates all form fields with data from SAC model",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "object",
+          "description": "Object containing all field values"
+        }
+      ]
+    }
+  },
   "events": {},
   "webcomponents": [{
     "kind": "main",
