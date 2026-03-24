@@ -28,7 +28,7 @@ class SyntaxFioriForm extends HTMLElement {
         width: 42% !important;
         vertical-align: top !important;
         box-sizing: border-box !important;
-        padding: 0 12px !important;
+        padding: 0 6px !important;
       }
       .sapUiFormResGridMainCont {
         width: 100% !important;
