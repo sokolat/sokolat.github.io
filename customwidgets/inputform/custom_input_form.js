@@ -1,5 +1,9 @@
 class SyntaxFioriForm extends HTMLElement {
   connectedCallback() {
+    // Prevent double initialization
+    if (this._initialized) return;
+    this._initialized = true;
+
     this.style.display = "block";
     this.style.height = "100%";
     this.style.overflowY = "auto";
