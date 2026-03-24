@@ -39,22 +39,33 @@ class SyntaxFioriForm extends HTMLElement {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
       }
-      /* Fix HBox stretching inside form cells */
-      .sapMHBox {
+      /* Force form field cells to full width */
+      .sapUiFormResGridEl > td:last-child {
         width: 100% !important;
-        box-sizing: border-box !important;
       }
-      .sapMHBox .sapMInput,
-      .sapMHBox .sapMSelect,
-      .sapMHBox .sapMDatePicker {
-        flex: 1 !important;
+      /* HBox full width with flex */
+      .sapMHBox {
+        display: flex !important;
+        width: 100% !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+      /* Icon fixed width with right margin */
+      .sapMHBox > .sapUiIcon {
+        flex-shrink: 0 !important;
+        margin-right: 8px !important;
+        width: 16px !important;
+      }
+      /* Input/Select/DatePicker take remaining space */
+      .sapMHBox > .sapMInput,
+      .sapMHBox > .sapMSelect,
+      .sapMHBox > .sapMDatePicker {
+        flex: 1 1 auto !important;
         width: 0 !important;
         min-width: 0 !important;
-      }
-      /* Icon spacing */
-      .sapMHBox .sapUiIcon {
-        margin-right: 8px !important;
-        flex-shrink: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
       }
     `;
     this.appendChild(style);
@@ -85,56 +96,48 @@ class SyntaxFioriForm extends HTMLElement {
           "Regional Lead", "SDM Prime", "VDI"
         ];
 
-        const mkIcon = (labelText) => {
-          const isAuto = autoFields.includes(labelText);
-          return new Icon({
-            src: isAuto ? "sap-icon://locked" : "sap-icon://edit",
-            color: "#0070f2",
-            size: "14px",
-            tooltip: isAuto ? "Mapped from source system" : "Manually editable"
-          });
-        };
-
-        const mkSelect = (labelText, items, selectedKey) => new HBox({
-          width: "100%",
-          alignItems: "Center",
-          items: [
-            mkIcon(labelText),
-            new Select({
-              width: "100%",
-              selectedKey,
-              items: items.map(([key, text]) => new Item({ key, text }))
-            })
-          ]
+        const mkIcon = (labelText) => new Icon({
+          src: autoFields.includes(labelText) ? "sap-icon://locked" : "sap-icon://edit",
+          color: "#0070f2",
+          size: "14px",
+          tooltip: autoFields.includes(labelText) ? "Mapped from source system" : "Manually editable"
         });
 
-        const mkInput = (labelText, value) => new HBox({
+        const mkHBox = (icon, control) => new HBox({
+          renderType: "Bare",
           width: "100%",
           alignItems: "Center",
-          items: [
-            mkIcon(labelText),
-            new Input({
-              value: value || "",
-              width: "100%",
-              editable: !autoFields.includes(labelText)
-            })
-          ]
+          items: [icon, control]
         });
 
-        const mkDate = (labelText, value, fmt) => new HBox({
-          width: "100%",
-          alignItems: "Center",
-          items: [
-            mkIcon(labelText),
-            new DatePicker({
-              value: value || "",
-              valueFormat: "yyyy-MM-dd",
-              displayFormat: fmt || "yyyy-MM-dd",
-              width: "100%",
-              editable: !autoFields.includes(labelText)
-            })
-          ]
-        });
+        const mkSelect = (labelText, items, selectedKey) => mkHBox(
+          mkIcon(labelText),
+          new Select({
+            width: "100%",
+            selectedKey,
+            items: items.map(([key, text]) => new Item({ key, text }))
+          })
+        );
+
+        const mkInput = (labelText, value) => mkHBox(
+          mkIcon(labelText),
+          new Input({
+            value: value || "",
+            width: "100%",
+            editable: !autoFields.includes(labelText)
+          })
+        );
+
+        const mkDate = (labelText, value, fmt) => mkHBox(
+          mkIcon(labelText),
+          new DatePicker({
+            value: value || "",
+            valueFormat: "yyyy-MM-dd",
+            displayFormat: fmt || "yyyy-MM-dd",
+            width: "100%",
+            editable: !autoFields.includes(labelText)
+          })
+        );
 
         const oCol1 = new FormContainer({
           title: "General",
