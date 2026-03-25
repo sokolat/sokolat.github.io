@@ -1,0 +1,30 @@
+{
+  "id": "com.sidya.fioriform.dev",
+  "version": "1.0.0",
+  "name": "Fiori Input Form (DEV)",
+  "newInstancePrefix": "FioriFormDev",
+  "properties": {
+    "projectId": { "type": "string", "default": "" },
+    "customerId": { "type": "string", "default": "" }
+  },
+  "methods": {
+    "setDataSource": {
+      "description": "Populates all form fields in one bulk call",
+      "parameters": [
+        {
+          "name": "formData",
+          "type": "Selection",
+          "description": "All form field values as a single selection object"
+        }
+      ]
+    }
+  },
+  "events": {},
+  "webcomponents": [{
+    "kind": "main",
+    "tag": "com-sidya-fioriform-dev",
+    "url": "https://sokolat.github.io/dev/customwidgets/inputform/custom_input_form.js",
+    "integrity": "",
+    "ignoreIntegrity": true
+  }]
+}

@@ -1,0 +1,63 @@
+{
+	"id": "com.sap.sidya.checkboxgroupdrilldown.dev",
+	"version": "1.0.0",
+	"name": "Check Box Group Drilldown (DEV)",
+	"description": "A Check Box Group for Drilldown Selection",
+	"newInstancePrefix": "CheckBoxGroupDrillDownDev",
+	"icon": "",
+	"vendor": "Sidya",
+	"eula": "",
+	"license": "",
+	"webcomponents": [
+		{
+			"kind": "main",
+			"tag": "com-sap-sidya-checkboxgroupdrilldown-dev-main",
+			"url": "https://sokolat.github.io/dev/customwidgets/checkboxgroupdrilldown.js",
+			"integrity": "",
+			"ignoreIntegrity": true
+		}
+	], "properties": {
+		"selections": {
+			"type": "Selection[]",
+			"description": "The selection defining the hierarchical data structure"
+		},
+		"expandByDefault": {
+			"type": "boolean",
+			"description": "Expand all nodes initially"
+		},
+		"showSelectAll": {
+			"type": "boolean",
+			"description": "Show a top-level Select All checkbox"
+		},
+		"multiSelect": {
+			"type": "boolean",
+			"description": "Allow multiple selections"
+		}
+	},
+	"methods": {
+		"setSelection": {
+			"description": "Sets the selection for the checkbox group",
+			"parameters": [
+				{
+					"name": "selections",
+					"type": "Selection[]",
+					"description": "The selection defining the hierarchical data structure"
+				}
+			],
+			"body": "this.selections = selections;"
+		},
+		"getSelection": {
+			"returnType": "Selection[]",
+			"description": "Gets the current selection of the checkbox group",
+			"body": "return this.selections;"
+		}
+	},
+	"events": {
+		"onSelect": {
+			"description": "Triggered when a checkbox is selected"
+		},
+		"onReorder": {
+			"description": "Triggered when items are reordered via drag and drop"
+		}
+	}
+}

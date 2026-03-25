@@ -297,4 +297,4 @@ class SyntaxFioriForm extends HTMLElement {
   }
 }
 
-customElements.define("com-sidya-fioriform", SyntaxFioriForm);
+customElements.define("com-sidya-fioriform-dev", SyntaxFioriForm);
