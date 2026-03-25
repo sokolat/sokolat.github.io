@@ -228,20 +228,18 @@
             };
 
             const setupDragAndDrop = (wrapper, parentContainer) => {
-                wrapper.setAttribute("draggable", "true");
+                // Only enable draggable when mousedown is on the handle
+                const handle = wrapper.querySelector(".drag-handle");
 
-                // Track whether a drag is in progress to suppress expand/collapse clicks
-                let isDragging = false;
+                handle.addEventListener("mousedown", () => {
+                    wrapper.setAttribute("draggable", "true");
+                });
+
+                document.addEventListener("mouseup", () => {
+                    wrapper.setAttribute("draggable", "false");
+                });
 
                 wrapper.addEventListener("dragstart", (e) => {
-                    // Only allow drag if it started on the drag handle
-                    const handle = wrapper.querySelector(".drag-handle");
-                    const composedPath = e.composedPath();
-                    if (!composedPath.includes(handle)) {
-                        e.preventDefault();
-                        return;
-                    }
-                    isDragging = true;
                     draggedEl = wrapper;
                     wrapper.classList.add("dragging");
                     e.dataTransfer.effectAllowed = "move";
@@ -250,10 +248,9 @@
 
                 wrapper.addEventListener("dragend", () => {
                     wrapper.classList.remove("dragging");
+                    wrapper.setAttribute("draggable", "false");
                     clearDropIndicators(parentContainer);
                     draggedEl = null;
-                    // Reset drag flag after a tick so the click handler can check it
-                    setTimeout(() => { isDragging = false; }, 0);
                 });
 
                 wrapper.addEventListener("dragover", (e) => {
