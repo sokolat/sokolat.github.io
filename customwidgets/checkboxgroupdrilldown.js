@@ -187,14 +187,17 @@
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
-                if (node.children.length) wrapper.classList.add("has-children");
+                if (node.children.length) {
+                    wrapper.classList.add("has-children");
+                    wrapper.classList.add("expanded");
+                }
 
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
 
                 const toggleIcon = document.createElement("ui5-icon");
                 toggleIcon.classList.add("toggle-icon");
-                toggleIcon.setAttribute("name", node.children.length ? "navigation-right-arrow" : "");
+                toggleIcon.setAttribute("name", node.children.length ? "navigation-down-arrow" : "");
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
