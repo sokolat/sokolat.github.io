@@ -230,22 +230,30 @@
             const setupDragAndDrop = (wrapper, parentContainer) => {
                 wrapper.setAttribute("draggable", "true");
 
+                // Track whether a drag is in progress to suppress expand/collapse clicks
+                let isDragging = false;
+
                 wrapper.addEventListener("dragstart", (e) => {
                     // Only allow drag if it started on the drag handle
                     const handle = wrapper.querySelector(".drag-handle");
-                    if (!handle.contains(e.target)) {
+                    const composedPath = e.composedPath();
+                    if (!composedPath.includes(handle)) {
                         e.preventDefault();
                         return;
                     }
+                    isDragging = true;
                     draggedEl = wrapper;
                     wrapper.classList.add("dragging");
                     e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", wrapper.dataset.nodeId);
                 });
 
                 wrapper.addEventListener("dragend", () => {
                     wrapper.classList.remove("dragging");
                     clearDropIndicators(parentContainer);
                     draggedEl = null;
+                    // Reset drag flag after a tick so the click handler can check it
+                    setTimeout(() => { isDragging = false; }, 0);
                 });
 
                 wrapper.addEventListener("dragover", (e) => {
@@ -311,6 +319,7 @@
                 dragHandle.classList.add("drag-handle");
                 dragHandle.innerHTML = `<svg viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>`;
                 dragHandle.title = "Drag to reorder";
+                dragHandle.addEventListener("click", (e) => e.stopPropagation());
 
                 const toggleIcon = document.createElement("ui5-icon");
                 toggleIcon.classList.add("toggle-icon");
