@@ -55,9 +55,6 @@
 	"events": {
 		"onSelect": {
 			"description": "Triggered when a checkbox is selected"
-		},
-		"onReorder": {
-			"description": "Triggered when items are reordered via drag and drop"
 		}
 	}
 }

@@ -94,41 +94,6 @@
                 vertical-align: middle;
             }
 
-            /* Drag handle */
-            .drag-handle {
-                cursor: grab;
-                color: #999;
-                font-size: 12px;
-                padding: 0 4px;
-                user-select: none;
-                display: flex;
-                align-items: center;
-            }
-            .drag-handle:active {
-                cursor: grabbing;
-            }
-            .drag-handle svg {
-                width: 14px;
-                height: 14px;
-                fill: #999;
-            }
-
-            /* Drag states */
-            .parent[draggable="true"] {
-                transition: opacity 0.2s;
-            }
-            .parent.dragging {
-                opacity: 0.4;
-            }
-            .parent.drag-over-top {
-                border-top: 2px solid #0070f2;
-                margin-top: 8px;
-            }
-            .parent.drag-over-bottom {
-                border-bottom: 2px solid #0070f2;
-                margin-bottom: 8px;
-            }
-
         </style>
         <div id="container"></div>
     `;
@@ -218,109 +183,21 @@
                 updateParentState(parentCheckbox);
             };
 
-            // Drag and drop state
-            let draggedEl = null;
-
-            const clearDropIndicators = (containerEl) => {
-                containerEl.querySelectorAll(".parent").forEach(el => {
-                    el.classList.remove("drag-over-top", "drag-over-bottom");
-                });
-            };
-
-            const setupDragAndDrop = (wrapper, parentContainer) => {
-                // Only enable draggable when mousedown is on the handle
-                const handle = wrapper.querySelector(".drag-handle");
-
-                handle.addEventListener("mousedown", () => {
-                    wrapper.setAttribute("draggable", "true");
-                });
-
-                document.addEventListener("mouseup", () => {
-                    wrapper.setAttribute("draggable", "false");
-                });
-
-                wrapper.addEventListener("dragstart", (e) => {
-                    draggedEl = wrapper;
-                    wrapper.classList.add("dragging");
-                    e.dataTransfer.effectAllowed = "move";
-                    e.dataTransfer.setData("text/plain", wrapper.dataset.nodeId);
-                });
-
-                wrapper.addEventListener("dragend", () => {
-                    wrapper.classList.remove("dragging");
-                    wrapper.setAttribute("draggable", "false");
-                    clearDropIndicators(parentContainer);
-                    draggedEl = null;
-                });
-
-                wrapper.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                    if (!draggedEl || draggedEl === wrapper) return;
-                    // Only allow reorder within the same container
-                    if (draggedEl.parentElement !== wrapper.parentElement) return;
-
-                    e.dataTransfer.dropEffect = "move";
-                    clearDropIndicators(parentContainer);
-
-                    const rect = wrapper.getBoundingClientRect();
-                    const midY = rect.top + rect.height / 2;
-                    if (e.clientY < midY) {
-                        wrapper.classList.add("drag-over-top");
-                    } else {
-                        wrapper.classList.add("drag-over-bottom");
-                    }
-                });
-
-                wrapper.addEventListener("dragleave", () => {
-                    wrapper.classList.remove("drag-over-top", "drag-over-bottom");
-                });
-
-                wrapper.addEventListener("drop", (e) => {
-                    e.preventDefault();
-                    if (!draggedEl || draggedEl === wrapper) return;
-                    if (draggedEl.parentElement !== wrapper.parentElement) return;
-
-                    const rect = wrapper.getBoundingClientRect();
-                    const midY = rect.top + rect.height / 2;
-                    const insertBefore = e.clientY < midY;
-
-                    const parent = wrapper.parentElement;
-                    if (insertBefore) {
-                        parent.insertBefore(draggedEl, wrapper);
-                    } else {
-                        parent.insertBefore(draggedEl, wrapper.nextSibling);
-                    }
-
-                    clearDropIndicators(parentContainer);
-
-                    // Update _data order to match new DOM order
-                    this._reorderData(parent);
-
-                    const event = new CustomEvent("onReorder");
-                    this.dispatchEvent(event);
-                });
-            };
-
             // Step 2: Recursive render
             const renderNode = (node) => {
                 const wrapper = document.createElement("div");
                 wrapper.classList.add("parent");
-                wrapper.dataset.nodeId = node.id;
-                if (node.children.length) wrapper.classList.add("has-children");
+                if (node.children.length) {
+                    wrapper.classList.add("has-children");
+                    wrapper.classList.add("expanded");
+                }
 
                 const header = document.createElement("div");
                 header.classList.add("parent-header");
 
-                // Drag handle
-                const dragHandle = document.createElement("span");
-                dragHandle.classList.add("drag-handle");
-                dragHandle.innerHTML = `<svg viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>`;
-                dragHandle.title = "Drag to reorder";
-                dragHandle.addEventListener("click", (e) => e.stopPropagation());
-
                 const toggleIcon = document.createElement("ui5-icon");
                 toggleIcon.classList.add("toggle-icon");
-                toggleIcon.setAttribute("name", node.children.length ? "navigation-right-arrow" : "");
+                toggleIcon.setAttribute("name", node.children.length ? "navigation-down-arrow" : "");
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
@@ -333,7 +210,6 @@
                 labelSpan.textContent = node.label;
                 labelSpan.title = node.label;
 
-                header.appendChild(dragHandle);
                 header.appendChild(toggleIcon);
                 header.appendChild(checkbox);
                 header.appendChild(labelSpan);
@@ -407,36 +283,7 @@
             };
 
             // Step 3: Render all roots
-            roots.forEach(root => {
-                const el = renderNode(root);
-                container.appendChild(el);
-                setupDragAndDrop(el, container);
-            });
-
-            // Setup drag and drop for children inside expanded groups
-            container.querySelectorAll(".child-group").forEach(childGroup => {
-                Array.from(childGroup.children).forEach(childEl => {
-                    setupDragAndDrop(childEl, childGroup);
-                });
-            });
-        }
-
-        _reorderData(containerEl) {
-            // Get the new order of node IDs from the DOM
-            const orderedIds = Array.from(containerEl.children)
-                .filter(el => el.dataset.nodeId)
-                .map(el => el.dataset.nodeId);
-
-            // Extract the items being reordered and their original indices
-            const reorderedItems = orderedIds.map(id => this._data.find(d => d.id === id)).filter(Boolean);
-
-            // Find original indices of these items in _data
-            const originalIndices = reorderedItems.map(item => this._data.indexOf(item)).sort((a, b) => a - b);
-
-            // Place reordered items back into their original slot positions
-            originalIndices.forEach((dataIdx, i) => {
-                this._data[dataIdx] = reorderedItems[i];
-            });
+            roots.forEach(root => container.appendChild(renderNode(root)));
         }
 
         onCustomWidgetAfterUpdate(changedProperties) {
