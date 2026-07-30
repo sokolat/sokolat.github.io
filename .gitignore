@@ -1,1 +1,4 @@
 .DS_Store
+
+# SAC upload bundles, rebuilt with tools/build_sac_bundles.py
+dist/
