@@ -46,6 +46,9 @@ SOURCE_TREES = {
 # A fixed timestamp keeps the ZIPs byte for byte reproducible across builds.
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
+# SAC rejects resource archives larger than this.
+MAX_ZIP_BYTES = 5 * 1024 * 1024
+
 
 class BuildError(Exception):
     """A manifest could not be turned into a bundle."""
@@ -72,14 +75,16 @@ def bundle_manifest(manifest_path: Path, site_url: str) -> tuple[dict, dict[str,
         if not source.is_file():
             raise BuildError(f"referenced file is missing: {source}")
 
-        # SAC resolves these against the root of the uploaded ZIP. Flatten to
-        # the file name and disambiguate only when two components collide.
+        # SAC resolves these against the root of the uploaded ZIP, and it only
+        # offers the ZIP upload when the url starts with a forward slash. The
+        # ZIP itself must stay flat, so disambiguate colliding file names
+        # rather than keeping the original folder layout.
         entry = source.name
         if resources.get(entry, source) != source:
             entry = f"{component['kind']}-{source.name}"
         resources[entry] = source
 
-        component["url"] = entry
+        component["url"] = f"/{entry}"
 
     return manifest, resources
 
@@ -97,6 +102,9 @@ def write_bundle(name: str, manifest: dict, resources: dict[str, Path], out_dir:
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
             archive.writestr(info, source.read_bytes())
+
+    if zip_out.stat().st_size > MAX_ZIP_BYTES:
+        print(f"warning: {zip_out.name} exceeds the 5 MB SAC upload limit", file=sys.stderr)
 
     return zip_out
 
